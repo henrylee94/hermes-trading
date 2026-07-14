@@ -1,0 +1,15 @@
+yfinance>=0.2.62
+finnhub-python
+pandas
+numpy
+pyarrow
+lxml
+beautifulsoup4
+curl_cffi
+requests
+statsmodels
+pandas_market_calendars
+python-telegram-bot
+python-dotenv
+fastapi
+uvicorn

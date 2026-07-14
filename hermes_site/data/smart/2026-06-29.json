@@ -1,0 +1,397 @@
+{
+  "as_of": "2026-06-29 00:33",
+  "crossref": [],
+  "fund_moves": [
+    {
+      "cusip": "02005N100",
+      "ticker": "ALLY",
+      "name": "ALLY FINL INC",
+      "shares": 1275000,
+      "usd": "500.2亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "02079K107",
+      "ticker": "GOOG",
+      "name": "ALPHABET INC",
+      "shares": 3585215,
+      "usd": "10284.5亿",
+      "trust": "official",
+      "action": "NEW",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "02079K305",
+      "ticker": "GOOGL",
+      "name": "ALPHABET INC",
+      "shares": 41283098,
+      "usd": "118713.7亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "025816109",
+      "ticker": "AXP",
+      "name": "AMERICAN EXPRESS CO",
+      "shares": 1399713,
+      "usd": "4233.9亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "060505104",
+      "ticker": "BAC",
+      "name": "BANK AMERICA CORP",
+      "shares": 9800000,
+      "usd": "4777.5亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "14040H105",
+      "ticker": "COF",
+      "name": "CAPITAL ONE FINL CORP",
+      "shares": 2137000,
+      "usd": "3898.5亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "166764100",
+      "ticker": "CVX",
+      "name": "CHEVRON CORPORATION",
+      "shares": 58251749,
+      "usd": "120522.9亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "21036P108",
+      "ticker": "STZ",
+      "name": "CONSTELLATION BRANDS INC",
+      "shares": 632890,
+      "usd": "949.3亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "23918K108",
+      "ticker": "DVA",
+      "name": "DAVITA INC",
+      "shares": 15126977,
+      "usd": "23248.7亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "247361702",
+      "ticker": "DAL",
+      "name": "DELTA AIR LINES INC",
+      "shares": 39809456,
+      "usd": "26465.3亿",
+      "trust": "official",
+      "action": "NEW",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "47233W109",
+      "ticker": "JEF",
+      "name": "JEFFERIES FINANCIAL GROUP IN",
+      "shares": 433558,
+      "usd": "178.9亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "501044101",
+      "ticker": "KR",
+      "name": "KROGER CO",
+      "shares": 27257260,
+      "usd": "19723.4亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "526057104",
+      "ticker": "LEN",
+      "name": "LENNAR CORP",
+      "shares": 10099642,
+      "usd": "8770.5亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "526057302",
+      "ticker": "LEN/B",
+      "name": "LENNAR CORP",
+      "shares": 237703,
+      "usd": "200.0亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "530909100",
+      "ticker": "LLYVA",
+      "name": "LIBERTY LIVE HOLDINGS INC",
+      "shares": 456768,
+      "usd": "418.6亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "530909308",
+      "ticker": "LLYVK",
+      "name": "LIBERTY LIVE HOLDINGS INC",
+      "shares": 1437289,
+      "usd": "1352.6亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "55616P104",
+      "ticker": "M",
+      "name": "MACYS INC",
+      "shares": 1662129,
+      "usd": "300.7亿",
+      "trust": "official",
+      "action": "NEW",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "615369105",
+      "ticker": "MCO",
+      "name": "MOODYS CORP",
+      "shares": 12623750,
+      "usd": "55071.1亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "650111107",
+      "ticker": "NYT",
+      "name": "NEW YORK TIMES CO MTN BE",
+      "shares": 13746535,
+      "usd": "11510.0亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "670346105",
+      "ticker": "NUE",
+      "name": "NUCOR CORP",
+      "shares": 3907075,
+      "usd": "6606.9亿",
+      "trust": "official",
+      "action": "TRIM",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "674599105",
+      "ticker": "OXY",
+      "name": "OCCIDENTAL PETE CORP",
+      "shares": 264941431,
+      "usd": "172211.9亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "829933100",
+      "ticker": "SIRI",
+      "name": "SIRIUSXM HOLDINGS INC",
+      "shares": 108822227,
+      "usd": "25116.2亿",
+      "trust": "official",
+      "action": "ADD",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "023135106",
+      "ticker": "AMZN",
+      "name": "AMAZON COM INC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "047726302",
+      "ticker": "BATRK",
+      "name": "ATLANTA BRAVES HLDGS INC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "16119P108",
+      "ticker": "CHTR",
+      "name": "CHARTER COMMUNICATIONS INC N",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "25243Q205",
+      "ticker": "DEO",
+      "name": "DIAGEO PLC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "25754A201",
+      "ticker": "DPZ",
+      "name": "DOMINOS PIZZA INC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "422806208",
+      "ticker": "HEI/A",
+      "name": "HEICO CORP NEW",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "512816109",
+      "ticker": "LAMR",
+      "name": "LAMAR ADVERTISING CO NEW",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "531229755",
+      "ticker": "FWONK",
+      "name": "LIBERTY MEDIA CORP DEL",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "57636Q104",
+      "ticker": "MA",
+      "name": "MASTERCARD INCORPORATED",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "73278L105",
+      "ticker": "POOL",
+      "name": "POOL CORP",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "91324P102",
+      "ticker": "UNH",
+      "name": "UNITEDHEALTH GROUP INC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "92826C839",
+      "ticker": "V",
+      "name": "VISA INC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "G0176J109",
+      "ticker": "G0176J109",
+      "name": "ALLEGION PLC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "G0403H108",
+      "ticker": "G0403H108",
+      "name": "AON PLC",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "G9001E102",
+      "ticker": "G9001E102",
+      "name": "LIBERTY LATIN AMERICA LTD",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    },
+    {
+      "cusip": "G9001E128",
+      "ticker": "G9001E128",
+      "name": "LIBERTY LATIN AMERICA LTD",
+      "shares": 0,
+      "usd": "$0",
+      "action": "EXIT",
+      "trust": "official",
+      "fund": "Berkshire Hathaway Inc"
+    }
+  ],
+  "insider_buys": [],
+  "ark": [],
+  "crowd": [],
+  "influencers": [],
+  "sources_ok": {
+    "edgar": true,
+    "openfigi": true,
+    "ark": false,
+    "reddit": false,
+    "x": true
+  }
+}

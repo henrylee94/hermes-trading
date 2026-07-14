@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hermes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#08090b; --surf:rgba(255,255,255,.04); --surf2:rgba(255,255,255,.07);
+    --line:rgba(255,255,255,.09); --line-h:rgba(255,255,255,.2);
+    --text:#f5f5f6; --text2:#c0c4cc; --muted:#838892; --faint:#565b63;
+    --indigo:#7c87ff; --cyan:#3fe0d0; --green:#34d399; --red:#fb6f7d; --amber:#f6b53f;
+    --green-d:rgba(52,211,153,.14); --red-d:rgba(251,111,125,.14); --amber-d:rgba(246,181,63,.14); --indigo-d:rgba(124,135,255,.16);
+    --sans:"Geist",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+    --pad:16px; --glass:blur(10px) saturate(150%);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-font-smoothing:antialiased}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+    font-size:15px;line-height:1.55;letter-spacing:-.006em;padding-bottom:80px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:0}
+  a{color:var(--indigo);text-decoration:none}
+
+  /* ===== aurora + grain backdrop (from v2) ===== */
+  .bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
+  .bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 26s ease-in-out infinite}
+  .bg i:nth-child(1){width:620px;height:620px;background:#3b2d8f;top:-220px;left:-120px}
+  .bg i:nth-child(2){width:520px;height:520px;background:#0d5b54;top:-160px;right:-100px;animation-delay:-8s}
+  .bg i:nth-child(3){width:460px;height:460px;background:#22255e;bottom:-200px;left:42%;animation-delay:-15s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,30px) scale(1.08)}66%{transform:translate(-30px,20px) scale(.96)}}
+  .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  /* glass surface + cursor spotlight (shared) */
+  .glow{position:relative;overflow:hidden;backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass)}
+  .glow::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none;
+    background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(124,135,255,.12),transparent 42%)}
+  .glow:hover::before{opacity:1}
+
+  /* ===== TOP BAR (mobile) ===== */
+  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;
+    padding:14px var(--pad);background:rgba(8,9,11,.7);backdrop-filter:var(--glass);border-bottom:1px solid var(--line)}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:600;font-size:16px;letter-spacing:-.02em}
+  .logo .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--cyan));box-shadow:0 0 14px 2px rgba(124,135,255,.6)}
+  .grow{flex:1}
+  .sel-wrap{position:relative}
+  select{appearance:none;background:var(--surf);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:9px 30px 9px 13px;font:inherit;font-size:13px;cursor:pointer;min-height:40px;backdrop-filter:var(--glass)}
+  select:hover{border-color:var(--line-h)}
+  .sel-wrap::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:10px;pointer-events:none}
+  .dateinp{background:var(--surf);color:var(--text);border:1px solid var(--line);border-radius:10px;
+    padding:8px 12px;font:inherit;font-size:13px;font-family:var(--mono);cursor:pointer;min-height:40px;color-scheme:dark}
+  .dateinp:hover{border-color:var(--line-h)}
+  .dateinp::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}
+
+  /* ===== BOTTOM NAV (mobile) ===== */
+  .botnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
+    background:rgba(8,9,11,.85);backdrop-filter:var(--glass);border-top:1px solid var(--line);
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+  .botnav .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:12px;
+    color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;min-height:48px;justify-content:center}
+  .botnav .b .bi{font-size:18px;line-height:1}
+  .botnav .b.active{color:var(--text);background:var(--surf2)}.botnav .b.active .bi{color:var(--indigo)}
+  .botnav .b.soon{opacity:.5}
+
+  main{padding:18px var(--pad);max-width:1180px;margin:0 auto}
+
+  /* ===== HERO + SENTIMENT METER ===== */
+  .eyebrow{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:8px}
+  h1{margin:0;font-size:clamp(24px,7vw,36px);font-weight:600;letter-spacing:-.035em;line-height:1.1;
+    background:linear-gradient(110deg,#fff 32%,#aab1ff 70%,#52e7d6);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .meter{margin:16px 0 4px}
+  .meter .scale{height:8px;border-radius:6px;background:linear-gradient(90deg,var(--red),var(--amber),var(--green));position:relative}
+  .meter .mk{position:absolute;top:-4px;width:4px;height:16px;border-radius:3px;background:#fff;box-shadow:0 0 0 3px var(--bg),0 0 12px rgba(255,255,255,.5);transform:translateX(-50%);transition:left .7s cubic-bezier(.2,.7,.2,1)}
+  .meter .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:7px}
+  .meter .now{font-size:13px;color:var(--text2);margin-top:6px}.meter .now b{color:var(--text)}
+
+  section{margin-top:22px}
+  .shead{display:flex;align-items:baseline;gap:9px;margin-bottom:12px}
+  .shead .t{font-size:16px;font-weight:600;letter-spacing:-.02em}
+  .shead .c{font-size:12px;color:var(--muted);font-family:var(--mono)}
+
+  /* ===== STAT STRIP ===== */
+  .strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .strip::-webkit-scrollbar{display:none}
+  .metric{flex:0 0 auto;min-width:128px;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px 16px;transition:border-color .2s,transform .2s}
+  .metric:hover{border-color:var(--line-h);transform:translateY(-2px)}
+  .metric .v{font-family:var(--mono);font-size:24px;font-weight:600;letter-spacing:-.03em}
+  .metric .k{font-size:12px;color:var(--muted);margin-top:5px}
+
+  .digest{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:18px;transition:border-color .2s}
+  .digest:hover{border-color:var(--line-h)}
+  .digest p{margin:0;color:var(--text2);font-size:15px;line-height:1.7;position:relative;z-index:1}
+
+  .rotrow{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--surf);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;transition:border-color .2s}
+  .rotrow:hover{border-color:var(--line-h)}
+  .rotrow .qd{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .rotrow .nm{font-weight:500;font-size:14px;position:relative;z-index:1}
+  .rotrow .qtag{font-size:12.5px;font-weight:600}
+  .rotrow .st{margin-left:auto;font-size:12px;color:var(--muted)}
+  .rotrow .ar{font-size:14px;width:18px;text-align:center}
+  .ar.up{color:var(--green)}.ar.dn{color:var(--red)}.ar.fl{color:var(--faint)}
+  .qlegend{font-size:11.5px;color:var(--faint);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap}
+  .qlegend span{display:inline-flex;align-items:center;gap:5px}.qlegend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .chartwrap{position:relative;height:260px;background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:14px;transition:border-color .2s}
+  .chartwrap:hover{border-color:var(--line-h)}
+
+  /* ===== ENTRY ZONE ===== */
+  .zcard{display:flex;gap:14px;background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;transition:border-color .2s,transform .2s}
+  .zcard:hover{border-color:var(--line-h);transform:translateY(-2px)}
+  .zcard::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;z-index:2}
+  .zcard.g::after{background:var(--green)}.zcard.r::after{background:var(--red)}
+  .gauge{flex:0 0 46px;position:relative;display:flex;flex-direction:column;align-items:center;z-index:1}
+  .gauge .track{width:6px;flex:1;background:var(--bg);border:1px solid var(--line);border-radius:6px;position:relative;min-height:120px}
+  .gauge .zone{position:absolute;left:0;right:0;bottom:0;background:var(--green-d);border-top:1.5px dashed var(--green);border-radius:0 0 5px 5px}
+  .gauge .now{position:absolute;left:50%;transform:translate(-50%,50%);width:13px;height:13px;border-radius:50%;background:var(--indigo);border:2px solid var(--bg);box-shadow:0 0 10px rgba(124,135,255,.8)}
+  .gauge .hi,.gauge .lo{font-size:9.5px;color:var(--faint);font-family:var(--mono)}.gauge .hi{margin-bottom:5px}.gauge .lo{margin-top:5px}
+  .zbody{flex:1;min-width:0;position:relative;z-index:1}
+  .zhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .zsym{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:-.02em}
+  .zname{color:var(--muted);font-size:12.5px}
+  .tag{font-weight:600;border-radius:7px;padding:2px 9px;font-size:12px;white-space:nowrap}
+  .tag.g{background:var(--green-d);color:var(--green)}.tag.r{background:var(--red-d);color:var(--red)}
+  .warn{color:var(--amber);font-size:11.5px;font-weight:500}
+  .prices{display:flex;gap:18px;margin:9px 0;font-size:13px}
+  .prices .pv{font-family:var(--mono);font-size:17px;font-weight:600}
+  .prices .lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .prices .now .pv{color:var(--indigo)}
+  .zreason{color:var(--text2);font-size:13.5px;margin:8px 0}
+  .flags{font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-bottom:8px}
+  .news{display:flex;gap:7px;flex-wrap:wrap}
+  .news a{font-size:12px;background:var(--surf2);border:1px solid var(--line);border-radius:7px;padding:4px 9px;color:var(--text2)}
+
+  /* ===== WATCH ===== */
+  .wrow{display:flex;align-items:center;gap:13px;padding:13px;background:var(--surf);border:1px solid var(--line);border-radius:13px;margin-bottom:9px;transition:border-color .2s,transform .2s}
+  .wrow:hover{border-color:var(--line-h);transform:translateY(-1px)}
+  .wrow .sym{font-family:var(--mono);font-weight:600;font-size:15px;flex:0 0 auto;width:62px;position:relative;z-index:1}
+  .wrow .mid{flex:1;min-width:0;position:relative;z-index:1}
+  .wrow .nm{font-size:12.5px;color:var(--muted);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wbar{height:5px;background:var(--bg);border-radius:4px;overflow:hidden}
+  .wbar i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--cyan));border-radius:4px}
+  .wrow .rt{flex:0 0 auto;text-align:right;position:relative;z-index:1}
+  .wrow .gap{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--indigo)}
+  .wrow .px{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* ===== FUNNEL ===== */
+  .funnel{display:flex;flex-direction:column;gap:8px}
+  .frow{display:flex;align-items:center;gap:12px}
+  .frow .bar{height:40px;border-radius:9px;background:linear-gradient(90deg,var(--indigo-d),var(--surf2));border:1px solid var(--line);display:flex;align-items:center;padding:0 14px;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+  .frow .bn{font-family:var(--mono);font-size:18px;font-weight:600}
+  .frow .bl{font-size:12.5px;color:var(--muted);flex:0 0 auto;width:78px}
+
+  .soonbox{text-align:center;color:var(--muted);padding:70px 20px}.soonbox .i{font-size:36px}
+  .reveal{opacity:0;transform:translateY(12px);transition:opacity .55s cubic-bezier(.2,.6,.2,1),transform .55s cubic-bezier(.2,.6,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ===== SETTINGS DRAWER ===== */
+  .gearbtn{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;
+    background:var(--surf);border:1px solid var(--line);color:var(--text2);cursor:pointer;font-size:17px}
+  .gearbtn:hover{border-color:var(--line-h);color:var(--text)}
+  .nav.gear{cursor:pointer}
+  .overlay{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s}
+  .overlay.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,90vw);z-index:50;transform:translateX(100%);
+    transition:transform .3s cubic-bezier(.2,.7,.2,1);background:rgba(14,15,18,.96);backdrop-filter:var(--glass);
+    border-left:1px solid var(--line);padding:22px;overflow-y:auto}
+  .drawer.open{transform:none}
+  .drawer h3{margin:0 0 4px;font-size:17px;font-weight:600;letter-spacing:-.02em}
+  .drawer .dsub{color:var(--muted);font-size:12.5px;margin-bottom:20px}
+  .dgrp{margin-bottom:22px}
+  .dgrp .gl{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.11em;margin-bottom:10px}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{flex:0 0 auto;background:var(--surf);border:1px solid var(--line);color:var(--text2);
+    border-radius:9px;padding:8px 13px;font:inherit;font-size:13px;cursor:pointer;font-family:var(--mono);transition:.15s;min-height:38px}
+  .seg button:hover{border-color:var(--line-h)}
+  .seg button.on{background:var(--indigo-d);border-color:transparent;color:#aab1ff}
+  .tog{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+  .tog:last-child{border-bottom:none}
+  .tog .tl{font-size:14px}
+  .sw{width:42px;height:24px;border-radius:20px;background:var(--surf2);border:1px solid var(--line);position:relative;cursor:pointer;transition:.2s;flex:0 0 auto}
+  .sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:.2s}
+  .sw.on{background:var(--indigo-d);border-color:transparent}.sw.on::after{left:21px;background:var(--indigo)}
+  .dclose{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
+    background:var(--surf);color:var(--text2);cursor:pointer;font-size:16px}
+  .dnote{font-size:11.5px;color:var(--faint);line-height:1.6;margin-top:6px;padding:12px;background:var(--surf);border-radius:10px}
+  .hidden{display:none!important}
+  /* smart-money tab */
+  .tb{font-size:10.5px;font-weight:600;border-radius:6px;padding:2px 7px;flex:0 0 auto}
+  .tb.official{background:var(--green-d);color:var(--green)}
+  .tb.crowd{background:var(--amber-d);color:var(--amber)}
+  .tb.unverified{background:var(--red-d);color:var(--red)}
+  .smrow{display:flex;align-items:center;gap:11px;padding:13px;background:var(--surf);border:1px solid var(--line);
+    border-radius:12px;margin-bottom:9px;transition:border-color .2s,transform .2s}
+  .smrow:hover{border-color:var(--line-h);transform:translateY(-1px)}
+  .smrow .sm-sym{font-family:var(--mono);font-weight:600;font-size:15px;flex:0 0 auto;min-width:66px;position:relative;z-index:1}
+  .smrow .sm-txt{flex:1;min-width:0;font-size:13.5px;color:var(--text2);position:relative;z-index:1}
+  .smrow .sm-txt b{color:var(--text)}
+  .smcross{border-left:3px solid var(--green)}
+  .star{color:var(--amber)}
+  .lede{color:var(--text2);font-size:14px;margin:12px 0 0;line-height:1.7}
+  /* swing / 做T */
+  .disc{background:var(--red-d);border:1px solid rgba(251,111,125,.3);border-radius:12px;padding:13px 15px;
+    color:#ffc0c6;font-size:13px;margin:12px 0 18px;line-height:1.6}
+  .swgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.swgrid{grid-template-columns:1fr}}
+  .swcard{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:18px;transition:border-color .2s,transform .2s}
+  .swcard:hover{border-color:var(--line-h);transform:translateY(-2px)}
+  .swcard.paused{opacity:.92}
+  .sw-h{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px}
+  .sw-sym{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:-.02em}
+  .sw-name{color:var(--muted);font-size:12.5px}
+  .sw-refresh{background:none;border:1px solid var(--line);color:var(--muted);font-size:14px;width:26px;height:26px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+  .sw-refresh:hover{border-color:var(--indigo);color:var(--indigo)}
+  .sw-refresh:disabled{opacity:.4;cursor:default}
+  .b-ok{background:var(--green-d);color:var(--green);font-size:12px;font-weight:600;border-radius:7px;padding:2px 9px}
+  .b-pause{background:var(--red-d);color:var(--red);font-size:12px;font-weight:600;border-radius:7px;padding:2px 9px}
+  .sw-px{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:10px}.sw-px b{color:var(--text);font-size:16px}
+  /* direction badge */
+  .dir-badge{font-size:11px;font-weight:600;border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .dir-badge.bull{background:rgba(34,197,94,0.15);border:1px solid #22c55e;color:#22c55e}
+  .dir-badge.bear{background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:#ef4444}
+  .dir-badge.neutral{background:rgba(167,139,250,0.15);border:1px solid #a78bfa;color:#a78bfa}
+  .dir-badge.pause{background:rgba(251,191,36,0.12);border:1px solid #fbbf24;color:#fbbf24}
+  .live-tag{color:#34d399;font-size:10px;font-weight:600;margin-left:4px}
+  /* support / resistance range */
+  .sw-range{margin:8px 0}
+  .range-labels{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);margin-bottom:4px}
+  .range-sup{color:#22c55e}.range-res{color:#ef4444}
+  .range-labels b{font-size:12px;color:var(--text)}
+  .range-bar{height:6px;background:var(--bg);border:1px solid var(--line);border-radius:4px;position:relative}
+  .range-marker{position:absolute;top:-4px;width:3px;height:14px;background:var(--indigo);border-radius:2px;box-shadow:0 0 8px rgba(124,135,255,.8);transform:translateX(-1.5px)}
+  /* EMA + volume indicators */
+  .sw-indicators{display:flex;gap:12px;font-size:12px;margin:8px 0 6px;font-family:var(--mono)}
+  .ema-tag{font-weight:500}.vol-tag{font-weight:500}
+  /* action block */
+  .sw-action-block{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0;font-size:13px;line-height:1.7;font-family:var(--mono)}
+  .sw-action-block.bear{border-left:3px solid #ef4444}
+  .sw-action-block.bull{border-left:3px solid #22c55e}
+  .sw-action-block.neutral{border-left:3px solid #a78bfa}
+  .action-header{color:var(--text);font-weight:600;margin-bottom:4px;font-size:13.5px}
+  .action-detail{color:var(--text2);padding-left:2px}
+  .action-detail.stop{color:#fbbf24}
+  .action-detail.target{color:#60a5fa}
+  .sw-pause-reason{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#fbbf24;margin:6px 0}
+  /* meta row */
+  .sw-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+  .sw-meta b{color:var(--text)}
+  .sw-pause-msg{background:var(--red-d);border-radius:10px;padding:12px;font-size:13px;color:#ffc0c6;margin-top:8px}
+  .cfgrow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+  .cfgrow:last-of-type{border-bottom:none}
+  .cfgrow .cl{font-size:13.5px}.cfgrow .cu{color:var(--faint);font-size:11px;margin-left:3px}
+  .cfgrow input{width:78px;background:var(--surf);border:1px solid var(--line);color:var(--text);border-radius:8px;
+    padding:7px 10px;font:inherit;font-family:var(--mono);font-size:13px;text-align:right}
+  .cfgrow input:focus{outline:none;border-color:var(--indigo)}
+  .btn{width:100%;margin-top:12px;background:var(--indigo-d);border:1px solid transparent;color:#aab1ff;
+    border-radius:10px;padding:12px;font:inherit;font-weight:600;cursor:pointer;font-size:14px}
+  .btn:hover{background:rgba(124,135,255,.24)}
+  .savemsg{font-size:12px;color:var(--green);margin-top:8px;text-align:center;opacity:0;transition:opacity .2s}
+  .savemsg.show{opacity:1}
+  .cfgitem{padding:11px 0;border-bottom:1px solid var(--line)}.cfgitem:last-of-type{border-bottom:none}
+  .cfgitem .cfgrow{padding:0;border:none}
+  .cfgdesc{font-size:11.5px;color:var(--faint);margin-top:6px;line-height:1.5}
+  .gsec{margin:24px 0 6px;padding:12px 14px;border-radius:11px;background:var(--surf2);border:1px solid var(--line)}
+  .gsec .gt{font-size:14px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:7px}
+  .gsec .gstrat{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.55}
+
+  /* info tooltip */
+  .info{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;
+    border:1px solid var(--line-h);color:var(--muted);font-size:10.5px;cursor:pointer;position:relative;flex:0 0 auto;font-style:normal;font-weight:500}
+  .info:hover{color:var(--text);border-color:var(--text2)}
+  .info .tip{position:absolute;bottom:140%;left:50%;transform:translateX(-50%);width:min(260px,78vw);
+    background:#15171c;border:1px solid var(--line-h);border-radius:10px;padding:11px 13px;font-size:12.5px;line-height:1.6;
+    color:var(--text2);opacity:0;pointer-events:none;transition:opacity .18s;z-index:60;font-weight:400;text-align:left;
+    letter-spacing:-.004em;box-shadow:0 10px 34px rgba(0,0,0,.55)}
+  .info:hover .tip,.info.show .tip{opacity:1}
+  .info .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#15171c}
+  .info .tip b{color:var(--text)}
+
+  /* methodology help */
+  .help{background:var(--surf);border:1px solid var(--line);border-radius:16px;margin-top:22px;overflow:hidden}
+  .help summary{cursor:pointer;padding:18px;font-size:15px;font-weight:600;letter-spacing:-.02em;list-style:none;display:flex;align-items:center;gap:8px}
+  .help summary::-webkit-details-marker{display:none}
+  .help summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .2s}
+  .help[open] summary::after{transform:rotate(180deg)}
+  .help .hb{padding:0 18px 20px;color:var(--text2);font-size:13.5px;line-height:1.75}
+  .help h4{color:var(--text);font-size:14px;margin:18px 0 6px;letter-spacing:-.01em}
+  .help .m{font-family:var(--mono);color:var(--indigo);font-size:12.5px}
+  .help .step{display:flex;gap:10px;margin:8px 0}
+  .help .step .nn{flex:0 0 24px;height:24px;border-radius:50%;background:var(--indigo-d);color:#aab1ff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:var(--mono)}
+
+  /* ===== DESKTOP ===== */
+  @media(min-width:860px){
+    body{padding-bottom:0}.botnav,.topbar{display:none}main{padding:0}
+    .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+    aside{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:22px 16px;
+      display:flex;flex-direction:column;gap:6px;background:rgba(8,9,11,.45);backdrop-filter:var(--glass)}
+    aside .logo{padding:6px 10px 18px}
+    .navlbl{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;padding:14px 10px 6px}
+    .nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--text2);font-size:14px;font-weight:500;cursor:pointer;transition:.15s}
+    .nav:hover{background:var(--surf)}.nav.active{background:var(--surf2);color:var(--text)}.nav.active .ic{color:var(--indigo)}
+    .nav.soon{opacity:.45}.nav .badge{margin-left:auto;font-size:10px;background:var(--indigo-d);color:var(--indigo);padding:1px 7px;border-radius:20px}
+    .nav .ic{width:16px;text-align:center}
+    aside .wkpick{margin-top:6px}.wkpick label{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.1em;display:block;margin:0 0 6px 5px}
+    aside select{width:100%}
+    aside .foot{margin-top:auto;font-size:11px;color:var(--faint);padding:10px;line-height:1.7}
+    .content{padding:34px 38px 50px;max-width:1080px}
+    .cols{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;align-items:start}
+    .rotwrap{grid-template-columns:1fr 1fr}
+    .zlist{display:grid;grid-template-columns:1fr 1fr;gap:12px}.zcard{margin-bottom:0}
+    .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wrow{margin-bottom:0}
+    .chartwrap{height:300px}.metric{flex:1}
+  }
+  .desktop-only{display:none}
+  @media(min-width:860px){.desktop-only{display:block}.mobile-only{display:none}}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+<div class="grain"></div>
+
+<div class="topbar mobile-only">
+  <div class="logo"><span class="dot"></span>Hermes</div>
+  <div class="grow"></div>
+  <input type="week" id="weekSelM" class="dateinp">
+  <button class="gearbtn" id="gearM">⚙</button>
+</div>
+
+<div class="app">
+  <aside class="desktop-only">
+    <div class="logo"><span class="dot"></span>Hermes</div>
+    <div class="navlbl">策略</div>
+    <div class="nav active" data-tab="value"><span class="ic">◈</span>长投 · 高价值</div>
+    <div class="nav" data-tab="smart"><span class="ic">★</span>大佬动向</div>
+    <div class="nav" data-tab="swing"><span class="ic">⊿</span>做T · Swing</div>
+    <div class="navlbl">报告</div>
+    <div class="wkpick"><label>长投周期(每周)</label><input type="week" id="weekSelD" class="dateinp" style="width:100%"></div>
+    <div class="nav gear" id="gearD" style="margin-top:8px"><span class="ic">⚙</span>设置</div>
+    <div class="foot">数据生成于<br><span class="mono" id="genTimeD"></span><br><br>仅供参考,非投资建议</div>
+  </aside>
+
+  <div class="content">
+    <main>
+      <div id="tab-value">
+        <div class="reveal">
+          <div class="eyebrow" id="eyebrow"></div>
+          <h1>本周市场速览</h1>
+          <div class="meter">
+            <div class="scale"><div class="mk" id="mk"></div></div>
+            <div class="ends"><span>谨慎</span><span>中性</span><span>乐观</span></div>
+            <div class="now">市场情绪:<b id="sentWord"></b>
+              <span class="info">i<span class="tip"><b>市场情绪刻度</b><br>综合大盘涨跌、VIX 恐慌指数、站上 200 日线的股票占比等算出的当下整体氛围。偏右=乐观/追涨,偏左=谨慎/避险。这是大环境参考,不针对单只股。</span></span>
+            </div>
+          </div>
+        </div>
+
+        <section class="reveal"><div class="strip" id="strip"></div></section>
+
+        <section class="reveal" data-panel="digest">
+          <div class="shead"><span class="t">🧭 市场叙事</span>
+            <span class="info">i<span class="tip"><b>市场叙事</b><br>用 AI 把本周市场新闻 + 板块表现总结成一段人话,让你不用自己刷新闻就知道"现在市场在经历什么、钱在往哪流"。所有数字来自真实行情,不是猜的。</span></span></div>
+          <div class="digest glow"><p id="digestText"></p></div>
+        </section>
+
+        <section class="reveal" data-panel="radar">
+          <div class="shead"><span class="t">🔥 风口雷达</span><span class="c">RRG · 资金轮动</span>
+            <span class="info">i<span class="tip"><b>风口雷达(RRG)</b><br>把 11 个行业板块按"相对强弱"和"动量"画在四象限里:<br><b>右上 领涨</b>=现在最强;<br><b>左上 轮入</b>=钱正流进来,可能是下一个风口;<br><b>右下 转弱</b>=见顶该止盈;<br><b>左下 回避</b>=弱。帮你提前发现下一个热门方向。</span></span></div>
+          <div class="cols">
+            <div class="chartwrap glow"><canvas id="rrgChart"></canvas></div>
+            <div>
+              <div id="rotList"></div>
+              <div class="qlegend">
+                <span><i style="background:var(--green)"></i>领涨</span>
+                <span><i style="background:var(--indigo)"></i>轮入(下一个)</span>
+                <span><i style="background:var(--amber)"></i>转弱</span>
+                <span><i style="background:var(--red)"></i>回避</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="reveal" data-panel="zone">
+          <div class="shead"><span class="t">💰 已进入入场区</span><span class="c" id="zoneCount"></span>
+            <span class="info">i<span class="tip"><b>入场区</b><br>这些好票的现价已经跌到我们算出的"推荐买入价"以下,价格够香了。<br>🟢=只是跟大盘/板块情绪回调,公司没事,可留意;<br>🔴=疑似真出问题(价值陷阱),建议回避。<br>左边竖条显示现价(蓝点)在 52 周高低区间的位置,绿色是买入区。</span></span></div>
+          <div class="zlist" id="zoneCards"></div>
+        </section>
+
+        <section class="reveal" data-panel="watch">
+          <div class="shead"><span class="t">👀 观察名单</span><span class="c" id="watchCount"></span>
+            <span class="info">i<span class="tip"><b>观察名单</b><br>通过了质量+估值筛选的好票,但现在还没跌到推荐买入价。进度条 = 离入场还差多远(越满越接近)。等它们跌到价就会进入上面的"入场区"。</span></span></div>
+          <div class="wgrid" id="watchBody"></div>
+        </section>
+
+        <section class="reveal" data-panel="funnel">
+          <div class="shead"><span class="t">🔎 筛选漏斗</span>
+            <span class="info">i<span class="tip"><b>筛选漏斗</b><br>显示约 550 只股票一层层被筛剩多少:<b>universe → 通过质量 → 低估 → 观察 → 入场区</b>。每一层的"门槛"就是你在 ⚙ 设置里改的那些标准——改严了,漏出来的就少。这是结果展示,不是配置本身。</span></span></div>
+          <div class="funnel" id="funnel"></div>
+        </section>
+
+        <details class="help">
+          <summary>📖 这些指标是什么意思?(点开看通俗说明)</summary>
+          <div class="hb">
+            <p>整套逻辑就一句话:<b>先确保是好公司 → 再看是不是便宜 → 算出该买的价 → 最后排除"便宜是因为出事"的陷阱。</b></p>
+
+            <div class="step"><span class="nn">1</span><div><b>质量:是不是好公司</b><br>
+              <span class="m">ROE</span> 用股东的钱赚钱的效率(越高越能赚)。
+              <span class="m">ROIC</span> 投入的总资本回报率。
+              <span class="m">负债权益比</span> 借了多少钱(越低越稳)。
+              <span class="m">流动比率</span> 短期还债能力。
+              <span class="m">自由现金流</span> 真正落袋的现金(要为正)。
+              <span class="m">Altman Z</span> 破产风险分(太低=危险,直接踢)。
+              <span class="m">Piotroski F-Score</span> 财务健康度 0–9 分(要 ≥7)。</div></div>
+
+            <div class="step"><span class="nn">2</span><div><b>估值:是不是便宜</b><br>
+              <span class="m">PE</span> 市盈率,股价相对盈利贵不贵(低于行业中位才算便宜)。
+              <span class="m">PB</span> 市净率。
+              <span class="m">PEG</span> 考虑成长后的 PE(<1 偏低估)。
+              <span class="m">神奇公式</span> Greenblatt 的方法:同时排"便宜"和"赚钱效率高",综合排名。</div></div>
+
+            <div class="step"><span class="nn">3</span><div><b>定价:该出多少钱买</b><br>
+              <span class="m">Graham Number</span> 和 PE 倍数法算出"公允价值",两者取低更保守。
+              再打一个<span class="m">安全边际</span>(默认 25%)=<b>推荐买入价</b>。现价跌破它才提示。</div></div>
+
+            <div class="step"><span class="nn">4</span><div><b>排雷:便宜是不是因为真出事</b><br>
+              检查 7 个危险信号:营收下滑、毛利下降、负债上升、现金流转负、F-Score 过低、削减股息、破产风险升高。触发 ≥2 个判为<b>价值陷阱(🔴)</b>。
+              再用<span class="m">事件研究</span>看这只股是跟着大盘一起跌(🟢 情绪),还是自己单独暴跌(🔴 多半有坏消息)。</div></div>
+
+            <p style="margin-top:16px;color:var(--faint)">⚙ 设置里能改第 1–3 层的门槛数字;改完写进 config.json,hermes 下次跑就按新标准筛。所有数据都是实时抓取的真实行情。</p>
+          </div>
+        </details>
+      </div>
+
+      <div id="tab-smart" style="display:none">
+        <div class="reveal">
+          <div class="eyebrow" id="smEyebrow"></div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h1>大佬都在做什么</h1>
+            <input type="date" id="smDay" class="dateinp" style="margin-left:auto"></div>
+          <p class="lede">每天更新。可信度:🟢 官方文件最可信 · 🟡 散户情绪看看就好 · 🔴 网红观点未经核实(很多人在「讲自己的书」)。⭐ = 也在你的关注清单里。</p>
+        </div>
+
+        <section class="reveal">
+          <div class="shead"><span class="t">⭐ 和你相关</span>
+            <span class="info">i<span class="tip"><b>和你相关</b><br>把"大佬/高管/散户/网红在动的股"和<b>你自己的观察名单+入场区</b>对照,挑出有交集的。这是最有用的部分:你看上的票,是不是也有聪明钱在买。</span></span></div>
+          <div id="smCross"></div>
+        </section>
+
+        <section class="reveal">
+          <div class="shead"><span class="t">🏦 大佬持仓变动</span><span class="c">13F · 季度,约45天延迟</span>
+            <span class="info">i<span class="tip"><b>13F 持仓</b><br>管理超 1 亿美元的大基金,每季度必须向官方(SEC)申报持仓——免费公开、可信。缺点:有约 45 天延迟,且只显示买入(看不到做空)。</span></span></div>
+          <div id="smFunds"></div>
+        </section>
+
+        <section class="reveal">
+          <div class="shead"><span class="t">👔 高管自购</span>
+            <span class="info">i<span class="tip"><b>内部人买入(Form 4)</b><br>公司高管用自己的钱买自家股票,2 个工作日内必须申报。<b>多名高管同时买入(集体买入)是很强的看涨信号</b>——他们最懂自家公司。卖出则噪音大,不一定有意义。</span></span></div>
+          <div id="smInsider"></div>
+        </section>
+
+        <section class="reveal">
+          <div class="shead"><span class="t">🚀 ARK 动向</span><span class="c">每日公开交易</span></div>
+          <div id="smArk"></div>
+        </section>
+
+        <section class="reveal">
+          <div class="shead"><span class="t">💬 散户热议榜</span><span class="c">情绪温度计,非买入信号</span>
+            <span class="info">i<span class="tip"><b>散户热议</b><br>Reddit(WSB 等)被讨论最多的股。能反映散户在追什么,但很吵、常是拉高出货的场子。<b>等你看到它热起来,早期涨幅多半已走完</b>。只当参考,别当买入依据。</span></span></div>
+          <div id="smCrowd"></div>
+        </section>
+
+        <section class="reveal" data-infl="1">
+          <div class="shead"><span class="t">📢 网红观点</span><span class="c">🔴 未经核实</span>
+            <span class="info">i<span class="tip"><b>网红观点</b><br>把追踪账号(含你给的 Serenity)的近期推文用 AI 总结。<b>这些人 90% 在讲自己的书</b>(持仓/卖订阅/卖课),名人看空≠你该卖。当"找思路"用,绝不照抄。需要 X 付费接口才会有数据。</span></span></div>
+          <div id="smInfl"></div>
+        </section>
+      </div>
+
+      <div id="tab-swing" style="display:none">
+        <div class="reveal">
+          <div class="eyebrow" id="swEyebrow"></div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h1>今日做T</h1>
+            <input type="date" id="swDay" class="dateinp" style="margin-left:auto"></div>
+          <div class="disc">⚠ <b>高风险提醒</b>:做T(短线高频)研究显示只有约 35–50% 的人长期赚钱。以下全部是<b>参考价格,不是投资建议</b>,可能亏损。趋势中的票已自动 🔴 暂停,只在区间震荡时才提示。先小仓或纸上验证。</div>
+        </div>
+        <div class="swgrid reveal" id="swCards"></div>
+        <!-- Watchlist Editor -->
+        <div class="reveal" style="margin-top:20px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('wlBody').classList.toggle('hidden')">
+            <span style="font-size:18px">📋</span>
+            <b>监控名单</b>
+            <span id="wlCount" style="color:var(--muted);font-size:13px"></span>
+            <span style="flex:1"></span>
+            <span style="color:var(--faint);font-size:12px">▼ 点击展开</span>
+          </div>
+          <div id="wlBody" class="hidden">
+            <div style="margin-bottom:10px">
+              <div style="font-size:12px;color:var(--muted);margin-bottom:4px">🤖 自动扫描 (每周六更新，✕ 可移除)</div>
+              <div id="wlAuto" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--muted);margin-bottom:4px">📌 手动固定 (你加的，不会被覆盖)</div>
+              <div id="wlPins" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+              <div style="display:flex;gap:8px">
+                <input id="wlNewSym" placeholder="加 ticker (如 NVDA)" style="flex:1;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;text-transform:uppercase" maxlength="6">
+                <button onclick="addPin()" style="padding:6px 14px;border:1px solid var(--indigo);border-radius:6px;background:transparent;color:var(--indigo);cursor:pointer;font-size:13px">+ 加入</button>
+              </div>
+              <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+                <button id="wlSaveBtn" onclick="saveWatchlist()" style="display:none;padding:6px 16px;border:none;border-radius:6px;background:var(--indigo);color:#fff;cursor:pointer;font-size:13px;font-weight:500">💾 保存名单</button>
+                <span id="wlSaveMsg" style="color:var(--green);font-size:12px;display:none"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="botnav mobile-only">
+  <div class="b active" data-tab="value"><span class="bi">◈</span>长投</div>
+  <div class="b" data-tab="smart"><span class="bi">★</span>大佬</div>
+  <div class="b" data-tab="swing"><span class="bi">⊿</span>做T</div>
+  <div class="b" id="gearB"><span class="bi">⚙</span>设置</div>
+</div>
+
+<!-- settings drawer (后台配置) -->
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <button class="dclose" id="dclose">✕</button>
+  <h3>设置</h3>
+  <div class="dsub">按三条线分开 · 显示项存浏览器,策略参数写 config.json</div>
+
+  <!-- ============ 长投 ============ -->
+  <div class="gsec"><div class="gt">◈ 长投 · 高价值</div>
+    <div class="gstrat">策略:每周一次。先筛"好公司"(ROE/财务健康/低负债)→ 再挑"便宜"(PE低于行业+神奇公式)→ 算公允价打安全边际给推荐买价 → 排除价值陷阱。买好票、跌到价、长期持有。</div></div>
+
+  <div class="dgrp">
+    <div class="gl">显示 · 推荐数量</div>
+    <div class="seg" id="segCount"><button data-v="5">5</button><button data-v="10">10</button><button data-v="12">12</button><button data-v="15">15</button><button data-v="20">20</button><button data-v="999">全部</button></div>
+    <div class="cfgdesc">入场区/观察名单各显示几只。只影响显示。</div>
+  </div>
+  <div class="dgrp">
+    <div class="gl">显示 · 观察名单排序</div>
+    <div class="seg" id="segSort"><button data-v="gap">距入场</button><button data-v="pe">PE</button><button data-v="roe">ROE</button></div>
+  </div>
+  <div class="dgrp">
+    <div class="gl">显示 · 风口雷达板块范围</div>
+    <div class="seg" id="segRot"><button data-v="all">全部板块</button><button data-v="top">只看领涨+轮入</button></div>
+  </div>
+  <div class="dgrp">
+    <div class="gl">显示 · 板块开关</div>
+    <div class="tog"><span class="tl">🧭 市场叙事</span><div class="sw" data-panel="digest"></div></div>
+    <div class="tog"><span class="tl">🔥 风口雷达</span><div class="sw" data-panel="radar"></div></div>
+    <div class="tog"><span class="tl">💰 入场区</span><div class="sw" data-panel="zone"></div></div>
+    <div class="tog"><span class="tl">👀 观察名单</span><div class="sw" data-panel="watch"></div></div>
+    <div class="tog"><span class="tl">🔎 筛选漏斗</span><div class="sw" data-panel="funnel"></div></div>
+  </div>
+  <div class="dgrp">
+    <div class="gl">策略参数 · 筛选标准(写 config.json)</div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">ROE 门槛<span class="cu">≥ %</span></span><input id="c_roe" type="number" step="1"></div><div class="cfgdesc">赚钱效率。调高=只要更能赚钱的公司。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">ROIC 门槛<span class="cu">≥ %</span></span><input id="c_roic" type="number" step="1"></div><div class="cfgdesc">资本回报率。调高=生意回报更高。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">负债权益比<span class="cu">< </span></span><input id="c_de" type="number" step="0.1"></div><div class="cfgdesc">借了多少钱。调低=更稳健。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">流动比率<span class="cu">≥ </span></span><input id="c_cur" type="number" step="0.1"></div><div class="cfgdesc">短期还债能力。调高=现金更充裕。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">市值下限<span class="cu">≥ 十亿$</span></span><input id="c_mktcap" type="number" step="0.5"></div><div class="cfgdesc">最小规模。调高=只看大盘股。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">F-Score<span class="cu">≥ </span></span><input id="c_fscore" type="number" step="1" min="0" max="9"></div><div class="cfgdesc">财务健康分0–9。调高=防陷阱更狠。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">最高 PE<span class="cu">≤ </span></span><input id="c_maxpe" type="number" step="1"></div><div class="cfgdesc">最贵接受几倍。调低=只要更便宜。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">安全边际<span class="cu">%</span></span><input id="c_mos" type="number" step="1"></div><div class="cfgdesc">公允价再打几折才提示。调高=更保守、机会更少。</div></div>
+  </div>
+
+  <!-- ============ 大佬 ============ -->
+  <div class="gsec"><div class="gt">★ 大佬动向</div>
+    <div class="gstrat">策略:每天晚上更新。追官方文件(13F 大佬持仓、Form4 高管买入、ARK)+ 散户热度 + 网红观点,和你自己的清单交叉。官方文件最可信,网红仅参考。</div></div>
+  <div class="dgrp">
+    <div class="gl">显示 · 数据来源开关</div>
+    <div class="tog"><span class="tl">🏦 大佬持仓(13F)</span><div class="sw" data-smart="funds"></div></div>
+    <div class="tog"><span class="tl">👔 高管自购(Form4)</span><div class="sw" data-smart="insider"></div></div>
+    <div class="tog"><span class="tl">🚀 ARK 动向</span><div class="sw" data-smart="ark"></div></div>
+    <div class="tog"><span class="tl">💬 散户热议</span><div class="sw" data-smart="crowd"></div></div>
+    <div class="tog"><span class="tl">📢 网红观点(未核实)</span><div class="sw" data-smart="infl"></div></div>
+    <div class="cfgdesc">关掉某个来源就不在大佬动向显示。追踪谁(基金/X账号)在 <span class="mono">tracked_entities.json</span> 里配。</div>
+  </div>
+
+  <!-- ============ 做T ============ -->
+  <div class="gsec"><div class="gt">⊿ 做T · Swing</div>
+    <div class="gstrat">策略:区间内高卖低买(网格)。每周筛~20只能玩的票,每晚算网格价,盘中可 Telegram 随时问。间距≈0.5×ATR,股数=目标盈利/步长(受风险上限约束),只在区间震荡时做、趋势中自动暂停。</div></div>
+  <div class="dgrp">
+    <div class="gl">策略参数(写 config.json)</div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">交易总本金<span class="cu">$</span></span><input id="s_equity" type="number" step="1000"></div><div class="cfgdesc">全部做T资金,用于算风险和分配。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">单只仓位预算<span class="cu">$</span></span><input id="s_budget" type="number" step="1000"></div><div class="cfgdesc">每只票最多投入多少钱。例:$10,000 → $100 的票满仓 100 股、$50 的票满仓 200 股。系统按这个算股数。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">最多同时持有<span class="cu">只</span></span><input id="s_maxpos" type="number" step="1"></div><div class="cfgdesc">同时最多做几只(单只预算 × 这个 ≤ 总本金)。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">每笔风险<span class="cu">%</span></span><input id="s_risk" type="number" step="0.5"></div><div class="cfgdesc">每笔最多亏本金的几%(风险上限,会压低股数)。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">每趟目标盈利<span class="cu">$</span></span><input id="s_target" type="number" step="50"></div><div class="cfgdesc">每个来回想赚多少($100-300)。股数=目标÷步长,但不超过预算和风险上限。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">每笔手续费<span class="cu">$</span></span><input id="s_commission" type="number" step="0.5"></div><div class="cfgdesc">来回成本,会从每趟盈利里扣。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">网格间距<span class="cu">×ATR</span></span><input id="s_stepk" type="number" step="0.1"></div><div class="cfgdesc">每格价差=几倍ATR。0.5=更密更频繁,1=更疏更大。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">止损<span class="cu">×ATR</span></span><input id="s_stopmult" type="number" step="0.1"></div><div class="cfgdesc">止损距现价几倍ATR。调大=不易被洗、但亏更多。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">波动甜区下限<span class="cu">ATR% ≥</span></span><input id="s_atrmin" type="number" step="0.5"></div><div class="cfgdesc">太小不够赚。低于此不入池。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">波动甜区上限<span class="cu">ATR% ≤</span></span><input id="s_atrmax" type="number" step="0.5"></div><div class="cfgdesc">太大太疯。高于此不入池。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">趋势上限<span class="cu">ADX <</span></span><input id="s_adxmax" type="number" step="1"></div><div class="cfgdesc">超过=在趋势中,自动暂停做T。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">专注池数量<span class="cu">只</span></span><input id="s_pool" type="number" step="1"></div><div class="cfgdesc">每周筛出多少只做T票(建议~20)。</div></div>
+    <div class="cfgitem"><div class="cfgrow"><span class="cl">每日最大亏损<span class="cu">$</span></span><input id="s_dailystop" type="number" step="100"></div><div class="cfgdesc">当日亏到此数就停手。</div></div>
+  </div>
+
+  <button class="btn" id="saveCfgBtn">保存策略参数到 config.json</button>
+  <div class="savemsg" id="saveMsg">✓ 已保存,hermes 下次运行生效</div>
+  <div class="dnote">显示项(数量/排序/开关)即时生效、存浏览器。策略参数(长投筛选 + 做T网格)写进 <span class="mono">config.json</span>,hermes 按它跑。⚠ 一律抓最新实时数据,绝不估算/编造。</div>
+</div>
+
+<script>
+let LONG = {};
+async function fetchValue() {
+  try {
+    const idx = await (await fetch('/data/value/index.json')).json();
+    for (const entry of idx) {
+      try {
+        LONG[entry.id] = await (await fetch('/data/value/' + entry.file)).json();
+      } catch(e) { console.warn('Missing value data:', entry.id); }
+    }
+  } catch(e) { console.warn('No value index yet'); }
+}
+
+/* ===== 大佬动向 · 按天 ===== */
+let SMART = {};
+async function fetchSmart() {
+  try {
+    const idx = await (await fetch('/data/smart/index.json')).json();
+    for (const entry of idx) {
+      try {
+        SMART[entry.id] = await (await fetch('/data/smart/' + entry.file)).json();
+      } catch(e) { console.warn('Missing smart data:', entry.id); }
+    }
+  } catch(e) { console.warn('No smart index yet'); }
+}
+
+/* ===== 做T · 按天 ===== */
+let SWING = {};
+async function fetchSwing() {
+  try {
+    const idx = await (await fetch('/data/swing/index.json')).json();
+    for (const entry of idx) {
+      try {
+        SWING[entry.id] = await (await fetch('/data/swing/' + entry.file)).json();
+      } catch(e) { console.warn('Missing swing data:', entry.id); }
+    }
+  } catch(e) { console.warn('No swing index yet'); }
+}
+
+/* ===== 后台显示配置(存 localStorage,不写死)===== */
+const DEFAULTS={count:10,sort:"gap",rot:"all",panels:{digest:1,radar:1,zone:1,watch:1,funnel:1},
+  smart:{funds:1,insider:1,ark:1,crowd:1,infl:1},
+  screen:{roe:12,roic:10,de:1.0,cur:1.5,mktcap:2,fscore:7,maxpe:15,mos:25},
+  swing:{equity:50000,budget:10000,maxpos:5,risk:1,target:200,stepk:0.5,stopmult:1.5,commission:0,atrmin:2.5,atrmax:6,adxmax:20,pool:20,dailystop:500}};
+function loadCfg(){try{const s=JSON.parse(localStorage.getItem("hermes_cfg")||"{}");
+  return{...DEFAULTS,...s,panels:{...DEFAULTS.panels,...(s.panels||{})},smart:{...DEFAULTS.smart,...(s.smart||{})},
+    screen:{...DEFAULTS.screen,...(s.screen||{})},swing:{...DEFAULTS.swing,...(s.swing||{})}}}catch(e){return JSON.parse(JSON.stringify(DEFAULTS))}}
+function saveCfg(){try{localStorage.setItem("hermes_cfg",JSON.stringify(CFG))}catch(e){}}
+let CFG=loadCfg();
+
+const SENTW={pos:"乐观",neg:"谨慎",neu:"中性"};
+function strengthWord(x){ // RS-Ratio -> 人话(100=和大盘一样)
+  if(x>=103)return"明显比大盘强"; if(x>=101)return"比大盘强";
+  if(x>=99)return"和大盘差不多"; if(x>=97)return"比大盘弱"; return"明显比大盘弱";}
+const QC={Leading:"#34d399",Improving:"#7c87ff",Weakening:"#f6b53f",Lagging:"#fb6f7d"};
+const QN={Leading:"领涨",Improving:"轮入",Weakening:"转弱",Lagging:"回避"};
+const QAR={Leading:["ar up","↑"],Improving:["ar up","↗"],Weakening:["ar dn","↘"],Lagging:["ar fl","→"]};
+let chart=null,curKey=null,curSmartKey=null,curSwingKey=null;
+
+function countUp(el,target){
+  const num=parseFloat(target);
+  if(isNaN(num)){el.textContent=target;return;}
+  const dur=650,t0=performance.now(),dec=((target.split(".")[1]||"").replace(/[^0-9]/g,"")).length;
+  const sign=target.trim().startsWith("+")?"+":"";
+  const suffix=target.replace(/[-+0-9.]/g,"");
+  (function step(t){const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);
+    el.textContent=sign+(num*e).toFixed(dec)+suffix;
+    if(p<1)requestAnimationFrame(step);})(t0);
+}
+
+function render(d){
+  document.querySelectorAll("#genTimeD").forEach(e=>e.textContent=d.generated_at);
+  eyebrow.textContent="Hermes · "+d.range+" · 高价值长投";
+  digestText.textContent=d.digest.text;
+  sentWord.textContent=SENTW[d.digest.sentiment];
+  mk.style.left=d.digest.score+"%";
+
+  strip.innerHTML=d.market_stats.map(s=>`<div class="metric glow"><div class="v" data-cu="${s.v}">0</div><div class="k">${s.k}</div></div>`).join("");
+  strip.querySelectorAll("[data-cu]").forEach(el=>countUp(el,el.dataset.cu));
+
+  let rows=[...d.rrg].sort((a,b)=>b.x-a.x);
+  if(CFG.rot==="top")rows=rows.filter(r=>r.q==="Leading"||r.q==="Improving");
+  rotList.innerHTML=rows.map(r=>{const[cls,ar]=QAR[r.q];
+    return `<div class="rotrow glow"><span class="qd" style="background:${QC[r.q]}"></span>
+      <span class="nm">${r.s}</span><span class="${cls}">${ar}</span>
+      <span class="qtag" style="color:${QC[r.q]}">${QN[r.q]}</span>
+      <span class="st">${strengthWord(r.x)}</span></div>`;}).join("")+
+    `<div style="font-size:12.5px;color:var(--text2);margin-top:10px;padding:0 4px">该板块龙头股:${d.leaders}</div>`;
+
+  const zoneShown=d.zone.slice(0,CFG.count);
+  zoneCount.textContent=zoneShown.length+(d.zone.length>zoneShown.length?" / "+d.zone.length:"")+" 只";
+  zoneCards.innerHTML=zoneShown.map(z=>{
+    const span=z.high-z.low,zp=(z.buy-z.low)/span*100,np=(z.price-z.low)/span*100;
+    return `<div class="zcard glow ${z.tag}">
+      <div class="gauge"><span class="hi">$${z.high}</span>
+        <div class="track"><div class="zone" style="height:${zp}%"></div><div class="now" style="bottom:${np}%"></div></div>
+        <span class="lo">$${z.low}</span></div>
+      <div class="zbody">
+        <div class="zhead"><span class="zsym">${z.sym}</span><span class="zname">${z.name}</span>
+          <span style="flex:1"></span><span class="tag ${z.tag}">${z.tag==="g"?"🟢 一时风向":"🔴 真问题"}</span>
+          ${z.momentum_ok?"":'<span class="warn">⚠ 下跌中</span>'}</div>
+        <div class="prices"><div class="now"><div class="lbl">现价</div><div class="pv">$${z.price}</div></div>
+          <div><div class="lbl">推荐买入</div><div class="pv">$${z.buy}</div></div></div>
+        <div class="zreason">${z.reason}</div>
+        <div class="flags">${z.flags}</div>
+        <div class="news">${z.news.map(n=>`<a href="${n.u}">📰 ${n.t}</a>`).join("")}</div></div></div>`;
+  }).join("");
+
+  let wl=[...d.watch];
+  if(CFG.sort==="gap")wl.sort((a,b)=>parseFloat(a.gap)-parseFloat(b.gap));
+  else if(CFG.sort==="pe")wl.sort((a,b)=>a.pe-b.pe);
+  else if(CFG.sort==="roe")wl.sort((a,b)=>(parseFloat(b.roe)||0)-(parseFloat(a.roe)||0));
+  const wlShown=wl.slice(0,CFG.count);
+  watchCount.textContent=wlShown.length+(d.watch.length>wlShown.length?" / "+d.watch.length:"")+" 只";
+  watchBody.innerHTML=wlShown.map(w=>{const g=parseFloat(w.gap);const fill=Math.max(6,Math.min(100,100-g*5));
+    return `<div class="wrow glow"><span class="sym">${w.sym}</span>
+      <div class="mid"><div class="nm">${w.name} · PE ${w.pe} · ROE ${w.roe}</div>
+        <div class="wbar"><i style="width:${fill}%"></i></div></div>
+      <div class="rt"><div class="gap">${w.gap}</div><div class="px">$${w.price}→$${w.buy}</div></div></div>`;}).join("");
+
+  const max=d.funnel[0].n;
+  funnel.innerHTML=d.funnel.map(f=>`<div class="frow"><span class="bl">${f.l}</span>
+    <div class="bar" style="width:${Math.max(22,f.n/max*100)}%"><span class="bn">${f.n}</span></div></div>`).join("");
+
+  try{ if(typeof Chart!=="undefined"){
+  if(chart)chart.destroy();
+  chart=new Chart(rrgChart,{type:"scatter",
+    data:{datasets:d.rrg.map(p=>({label:p.s,data:[{x:p.x,y:p.y}],backgroundColor:QC[p.q],pointRadius:6,pointHoverRadius:8,borderColor:"rgba(0,0,0,.35)",borderWidth:1}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{backgroundColor:"#0c0d0f",borderColor:"rgba(255,255,255,.12)",borderWidth:1,titleColor:"#f5f5f6",bodyColor:"#838892",padding:10,cornerRadius:8,
+        titleFont:{family:"Geist"},bodyFont:{family:"Geist Mono"},callbacks:{label:c=>`(${c.parsed.x.toFixed(1)}, ${c.parsed.y.toFixed(1)})`}}},
+      scales:{x:{title:{display:true,text:"← 比大盘弱     比大盘强 →",color:"#565b63",font:{family:"Geist",size:10}},grid:{color:"rgba(255,255,255,.05)"},ticks:{display:false},suggestedMin:96,suggestedMax:106},
+        y:{title:{display:true,text:"← 资金流出     资金流入 →",color:"#565b63",font:{family:"Geist",size:10}},grid:{color:"rgba(255,255,255,.05)"},ticks:{display:false},suggestedMin:96,suggestedMax:106}}},
+    plugins:[{id:"x",afterDraw:ch=>{const{ctx,chartArea:a,scales}=ch;const xc=scales.x.getPixelForValue(100),yc=scales.y.getPixelForValue(100);
+      ctx.save();ctx.strokeStyle="rgba(255,255,255,.13)";ctx.setLineDash([3,4]);ctx.beginPath();
+      ctx.moveTo(a.left,yc);ctx.lineTo(a.right,yc);ctx.moveTo(xc,a.top);ctx.lineTo(xc,a.bottom);ctx.stroke();
+      ctx.setLineDash([]);ctx.fillStyle="rgba(255,255,255,.2)";ctx.font="10px Geist";
+      ctx.fillText("领涨",a.right-28,a.top+12);ctx.fillText("轮入",a.left+4,a.top+12);
+      ctx.fillText("回避",a.left+4,a.bottom-6);ctx.fillText("转弱",a.right-28,a.bottom-6);ctx.restore();}}]});
+  }}catch(e){console.warn("chart error",e);}
+
+  document.querySelectorAll(".reveal").forEach((el,i)=>{el.classList.remove("in");setTimeout(()=>el.classList.add("in"),60+i*70);});
+}
+
+function emptyRow(){return '<div class="smrow"><span class="sm-txt" style="color:var(--faint)">本周无数据</span></div>';}
+/* ===== 做T 实时刷新 ===== */
+async function refreshSwing(sym, btn) {
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  btn.style.opacity = '0.5';
+  try {
+    const resp = await fetch('/api/swing/compute?sym=' + encodeURIComponent(sym));
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    // Update the current SWING data — only overwrite fields that have real data
+    for (const key in SWING) {
+      const sw = SWING[key];
+      if (sw && sw.stocks) {
+        const idx = sw.stocks.findIndex(s => s.sym === sym);
+        if (idx >= 0) {
+          const existing = sw.stocks[idx];
+          // Only merge if refresh returned real levels (not price_only fallback)
+          if (!data.price_only || (data.buy_levels && data.buy_levels.length > 0)) {
+            sw.stocks[idx] = { ...existing, ...data, live: true };
+          } else {
+            // Refresh failed to compute — just update price, keep existing levels
+            sw.stocks[idx] = { ...existing, price: data.price, live: true };
+          }
+          renderSwing(sw);
+          break;
+        }
+      }
+    }
+    btn.textContent = '✓';
+    setTimeout(() => { btn.textContent = '↻'; }, 1500);
+  } catch (e) {
+    btn.textContent = '✗';
+    setTimeout(() => { btn.textContent = '↻'; }, 2000);
+    console.error('refresh error:', e);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
+/* ===== 监控名单 Editor ===== */
+let WL_DATA = { auto: [], pins: [], exclude: [] };
+let WL_PENDING = { autoRemove: [], pinAdd: [], pinRemove: [] }; // pending changes
+
+async function fetchWatchlist() {
+  try {
+    const r = await fetch('/api/swing/watchlist');
+    WL_DATA = await r.json();
+    WL_PENDING = { autoRemove: [], pinAdd: [], pinRemove: [] };
+    renderWatchlist();
+  } catch (e) { console.error('watchlist fetch error:', e); }
+}
+
+function renderWatchlist() {
+  const auto = WL_DATA.auto || [];
+  const pins = WL_DATA.pins || [];
+  const exclude = WL_DATA.exclude || [];
+  // Effective pool = auto (not excluded, not pending remove) + pins (not pending remove) + pending add
+  const autoEffective = auto.filter(s => {
+    const sym = typeof s === 'string' ? s : s.sym;
+    return !exclude.includes(sym) && !WL_PENDING.autoRemove.includes(sym);
+  });
+  const pinsEffective = pins.filter(p => !WL_PENDING.pinRemove.includes(p.sym));
+  const pinsAdded = WL_PENDING.pinAdd.filter(p => !pinsEffective.some(pe => pe.sym === p.sym));
+  const total = autoEffective.length + pinsEffective.length + pinsAdded.length;
+  const hasPending = WL_PENDING.autoRemove.length > 0 || WL_PENDING.pinAdd.length > 0 || WL_PENDING.pinRemove.length > 0;
+  document.getElementById('wlCount').textContent = `${total} 只 (自动 ${autoEffective.length} + 手动 ${pinsEffective.length + pinsAdded.length})` + (exclude.length ? ` · 屏蔽 ${exclude.length}` : '');
+
+  document.getElementById('wlAuto').innerHTML = autoEffective.map(s => {
+    const sym = typeof s === 'string' ? s : s.sym;
+    return `<span style="padding:3px 10px;border-radius:6px;background:var(--bg);border:1px solid var(--line);color:var(--text);font-size:13px;display:inline-flex;align-items:center;gap:4px">
+      ${sym}
+      <span style="cursor:pointer;color:var(--faint);margin-left:2px" onclick="pendingRemoveAuto('${sym}')">✕</span>
+    </span>`;
+  }).join('');
+
+  document.getElementById('wlPins').innerHTML = [...pinsEffective, ...pinsAdded].map(p =>
+    `<span style="padding:3px 10px;border-radius:6px;background:rgba(99,102,241,.1);border:1px solid var(--indigo);color:var(--text);font-size:13px;display:inline-flex;align-items:center;gap:4px">
+      ${p.sym}${p.fixed_shares ? ' (' + p.fixed_shares + '股)' : ''}
+      <span style="cursor:pointer;color:var(--faint);margin-left:2px" onclick="pendingRemovePin('${p.sym}')">✕</span>
+    </span>`
+  ).join('');
+
+  // Show/hide save button
+  const saveBtn = document.getElementById('wlSaveBtn');
+  if (saveBtn) saveBtn.style.display = hasPending ? 'inline-flex' : 'none';
+}
+
+function pendingRemoveAuto(sym) {
+  if (WL_PENDING.autoRemove.includes(sym)) return;
+  WL_PENDING.autoRemove.push(sym);
+  renderWatchlist();
+  if (curSwingKey && SWING[curSwingKey]) renderSwing(SWING[curSwingKey]);
+}
+
+function pendingRemovePin(sym) {
+  if (WL_PENDING.pinRemove.includes(sym)) return;
+  WL_PENDING.pinRemove.push(sym);
+  renderWatchlist();
+  if (curSwingKey && SWING[curSwingKey]) renderSwing(SWING[curSwingKey]);
+}
+
+function addPin() {
+  const input = document.getElementById('wlNewSym');
+  const sym = input.value.trim().toUpperCase();
+  if (!sym || !sym.match(/^[A-Z]{1,6}$/)) return;
+  // Check if already in effective pool
+  const allSyms = [...(WL_DATA.auto||[]).map(s=>s.sym||s), ...(WL_DATA.pins||[]).map(p=>p.sym), ...WL_PENDING.pinAdd.map(p=>p.sym)];
+  if (allSyms.includes(sym)) return;
+  WL_PENDING.pinAdd.push({ sym: sym, fixed_shares: 100 });
+  input.value = '';
+  renderWatchlist();
+}
+
+async function saveWatchlist() {
+  try {
+    // Build new auto list (remove pending removals)
+    const newAuto = (WL_DATA.auto || []).filter(s => {
+      const sym = typeof s === 'string' ? s : s.sym;
+      return !WL_PENDING.autoRemove.includes(sym);
+    });
+    // Also add to exclude so weekly scan won't re-add them
+    const newExclude = [...(WL_DATA.exclude || []), ...WL_PENDING.autoRemove];
+    // Build new pins list
+    const existingPins = (WL_DATA.pins || []).filter(p => !WL_PENDING.pinRemove.includes(p.sym));
+    const newPins = [...existingPins, ...WL_PENDING.pinAdd];
+
+    const r = await fetch('/api/swing/watchlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ auto: newAuto, pins: newPins, exclude: newExclude })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      WL_DATA = { auto: newAuto, pins: newPins, exclude: newExclude };
+      WL_PENDING = { autoRemove: [], pinAdd: [], pinRemove: [] };
+      renderWatchlist();
+      if (curSwingKey && SWING[curSwingKey]) renderSwing(SWING[curSwingKey]);
+      const msg = document.getElementById('wlSaveMsg');
+      if (msg) { msg.textContent = '✓ 已保存 (' + d.effective + '只)'; msg.style.display = 'inline'; setTimeout(()=>{ msg.style.display='none'; }, 3000); }
+    }
+  } catch (e) { console.error('watchlist save error:', e); }
+}
+
+function renderSwing(sw){
+  if(!sw)return;
+  const auto = WL_DATA.auto || [];
+  const pins = WL_DATA.pins || [];
+  const exclude = WL_DATA.exclude || [];
+  const poolSyms = new Set([
+    ...auto.filter(s => { const sym = typeof s === 'string' ? s : s.sym; return !exclude.includes(sym) && !WL_PENDING.autoRemove.includes(sym); }).map(s => typeof s === 'string' ? s : s.sym),
+    ...pins.filter(p => !WL_PENDING.pinRemove.includes(p.sym)).map(p => p.sym),
+    ...WL_PENDING.pinAdd.map(p => p.sym)
+  ]);
+  const visible = sw.stocks.filter(s => poolSyms.has(s.sym));
+  const recommended = visible.filter(s => s.recommendation === "建议").length;
+  if(window.swEyebrow) swEyebrow.textContent = "数据截至 " + sw.as_of + " · 专注池 " + visible.length + " 只 · 建议做T " + recommended + " · 不建议 " + (visible.length - recommended);
+  const budget = (CFG.swing && CFG.swing.budget) || 10000;
+
+  function parseAction(a){
+    if(!a) return '';
+    const lines = a.split('\n').map(l=>l.trim()).filter(Boolean);
+    const hdr = lines[0];
+    const details = lines.slice(1);
+    let h = `<div class="action-header">${hdr}</div>`;
+    details.forEach(d => {
+      let cls = 'action-detail';
+      if(/止损|止/.test(d)) cls += ' stop';
+      else if(/目标/.test(d)) cls += ' target';
+      h += `<div class="${cls}">${d}</div>`;
+    });
+    return h;
+  }
+
+  swCards.innerHTML = visible.map(s => {
+    const trend = s.ema_trend || 'neutral';
+    // direction badge
+    let dirBadge = '';
+    if(s.recommendation === '不建议') dirBadge = '<span class="dir-badge pause">⚠ 不操作</span>';
+    else if(trend === 'bearish') dirBadge = '<span class="dir-badge bear">📉 做空</span>';
+    else if(trend === 'bullish') dirBadge = '<span class="dir-badge bull">📈 做多</span>';
+    else dirBadge = '<span class="dir-badge neutral">🔄 区间</span>';
+
+    const px = s.price;
+    const sup = s.support || s.box_low;
+    const res = s.resistance || s.box_high;
+    const span = res - sup;
+    const pxPct = span > 0 ? Math.max(0, Math.min(100, (px - sup) / span * 100)) : 50;
+
+    const emaColor = trend === 'bearish' ? '#ef4444' : trend === 'bullish' ? '#22c55e' : '#a78bfa';
+    const volIcon = s.vol_enough ? '✓' : '✗';
+    const volColor = s.vol_enough ? '#22c55e' : '#fbbf24';
+
+    if(s.price_only){
+      return `<div class="swcard glow"><div class="sw-h"><span class="sw-sym">${s.sym}</span><span class="sw-name">${s.name||''}</span></div><div class="sw-px">现价 <b>$${px}</b></div><div class="sw-pause-msg">无法计算完整数据</div></div>`;
+    }
+
+    return `<div class="swcard glow">
+      <div class="sw-h">
+        <span class="sw-sym">${s.sym}</span><span class="sw-name">${s.name||''}</span>
+        <button class="sw-refresh" onclick="refreshSwing('${s.sym}',this)" title="刷新">↻</button>
+        <span style="flex:1"></span>${dirBadge}
+      </div>
+      <div class="sw-px">现价 <b>$${px}</b>${s.live?'<span class="live-tag">LIVE</span>':''}</div>
+      <div class="sw-range">
+        <div class="range-labels"><span class="range-sup">支撑 <b>$${sup}</b></span><span class="range-res">压力 <b>$${res}</b></span></div>
+        <div class="range-bar"><div class="range-marker" style="left:${pxPct}%"></div></div>
+      </div>
+      <div class="sw-indicators">
+        <span class="ema-tag" style="color:${emaColor}">${s.ema_label||''}</span>
+        <span class="vol-tag" style="color:${volColor}">Vol${volIcon}(${s.vol_ratio||0}x)</span>
+      </div>
+      <div class="sw-action-block ${trend}">${parseAction(s.action_now)}</div>
+      ${s.recommendation === '不建议' ? '<div class="sw-pause-reason">⚠ '+(s.recommendation_reason||'不建议做T')+'</div>' : ''}
+      <div class="sw-meta"><span>止损 <b>$${s.stop}</b></span><span>每趟 <b>${s.profit_per}</b></span><span>预算 <b>$${budget.toLocaleString()}</b></span><span>满仓≈<b>${Math.floor(budget/px)}</b>股</span></div>
+    </div>`;
+  }).join("");
+}
+function renderSmart(sm){
+  if(!sm)return;
+  if(window.smEyebrow)smEyebrow.textContent="Hermes · 数据截至 "+sm.as_of+" · 大佬动向(每日)";
+  const d={zone:(LONG[curKey]||{}).zone||[],watch:(LONG[curKey]||{}).watch||[]};
+  const userT=new Set([...(d.zone||[]).map(z=>z.sym),...(d.watch||[]).map(w=>w.sym)]);
+  const star=t=>userT.has(t)?'<span class="star">⭐</span>':'';
+  smCross.innerHTML=(sm.crossref||[]).map(c=>`<div class="smrow smcross glow"><span class="sm-txt">⭐ ${c.text}</span></div>`).join("")||emptyRow();
+  smFunds.innerHTML=(sm.fund_moves||[]).map(f=>`<div class="smrow glow"><span class="sm-sym">${star(f.ticker)}${f.ticker}</span><span class="sm-txt"><b>${f.fund}</b> ${f.action} · ${f.name}</span><span class="tb official">🟢官方</span></div>`).join("")||emptyRow();
+  smInsider.innerHTML=(sm.insider_buys||[]).map(x=>`<div class="smrow glow"><span class="sm-sym">${star(x.ticker)}${x.ticker}</span><span class="sm-txt">${x.cluster?'<b>集体买入</b> · ':''}${x.insiders} 位高管买入 · 约 $${x.usd}</span><span class="tb official">🟢官方</span></div>`).join("")||emptyRow();
+  smArk.innerHTML=(sm.ark||[]).map(a=>`<div class="smrow glow"><span class="sm-sym">${star(a.ticker)}${a.ticker}</span><span class="sm-txt">ARK ${a.action} · ${a.name}</span><span class="tb official">🟢官方</span></div>`).join("")||emptyRow();
+  smCrowd.innerHTML=(sm.crowd||[]).map((c,i)=>`<div class="smrow glow"><span class="sm-sym">${star(c.ticker)}${c.ticker}</span><span class="sm-txt">#${i+1} 热议 · ${c.mentions} 次提及 · 情绪 ${c.stance}</span><span class="tb crowd">🟡散户</span></div>`).join("")||emptyRow();
+  smInfl.innerHTML=(sm.influencers||[]).map(p=>`<div class="smrow glow"><span class="sm-sym">@${p.handle}</span><span class="sm-txt"><b>${p.name}</b>:${p.summary} · 点名 ${p.tickers.join("/")} · <b>${p.stance}</b><br><span style="color:var(--faint);font-size:12px">⚠ ${p.note}</span></span><span class="tb unverified">🔴未核实</span></div>`).join("")||emptyRow();
+  // visibility per 大佬 config toggles (and X source availability for influencers)
+  const xOff=sm.sources_ok&&sm.sources_ok.x===false;
+  const vis={funds:smFunds,insider:smInsider,ark:smArk,crowd:smCrowd,infl:smInfl};
+  Object.entries(vis).forEach(([k,el])=>{const sec=el.closest("section");if(!sec)return;
+    let show=CFG.smart[k]!==0; if(k==="infl"&&xOff)show=false; sec.style.display=show?"":"none";});
+}
+
+// cursor spotlight (event-delegated, efficient)
+document.addEventListener("mousemove",e=>{const el=e.target.closest(".glow");if(!el)return;
+  const r=el.getBoundingClientRect();el.style.setProperty("--mx",(e.clientX-r.left)+"px");el.style.setProperty("--my",(e.clientY-r.top)+"px");});
+
+// ===== INIT: load all data from server, then render =====
+async function init() {
+  await Promise.all([fetchValue(), fetchSmart(), fetchSwing(), fetchWatchlist()]);
+
+  // 长投:周 picker
+  const sels=[document.getElementById("weekSelM"),document.getElementById("weekSelD")];
+  const wkKeys=Object.keys(LONG).sort();
+  if(wkKeys.length===0){wkKeys.push("empty");}
+  function pickWeek(v){ if(!LONG[v]){v=wkKeys[wkKeys.length-1];} sels.forEach(s=>s.value=v); curKey=v; render(LONG[curKey]); applyPanels(); }
+  sels.forEach(s=>{s.min=wkKeys[0];s.max=wkKeys[wkKeys.length-1];s.addEventListener("change",e=>pickWeek(e.target.value));});
+  pickWeek(wkKeys[wkKeys.length-1]);
+
+  // 大佬:日历 picker
+  const smSel=document.getElementById("smDay");const smKeys=Object.keys(SMART).sort();
+  if(smKeys.length>0){smSel.min=smKeys[0];smSel.max=smKeys[smKeys.length-1];}
+  function pickSmart(v){ curSmartKey=v; if(SMART[v]){smSel.value=v;renderSmart(SMART[v]);}
+    else{smCross.innerHTML='<div class="smrow"><span class="sm-txt" style="color:var(--faint)">该日期暂无数据</span></div>';
+         ["smFunds","smInsider","smArk","smCrowd","smInfl"].forEach(id=>document.getElementById(id).innerHTML="");} }
+  smSel.addEventListener("change",e=>pickSmart(e.target.value));
+  if(smKeys.length>0)pickSmart(smKeys[smKeys.length-1]);
+
+  // 做T:日历 picker
+  const swSel=document.getElementById("swDay");const swKeys=Object.keys(SWING).sort();
+  if(swKeys.length>0){swSel.min=swKeys[0];swSel.max=swKeys[swKeys.length-1];}
+  function pickSwing(v){ curSwingKey=v; if(SWING[v]){swSel.value=v;renderSwing(SWING[v]);}
+    else{swCards.innerHTML='<div class="swcard"><div class="sw-pause-msg">该日期暂无数据</div></div>';} }
+  swSel.addEventListener("change",e=>pickSwing(e.target.value));
+  if(swKeys.length>0)pickSwing(swKeys[swKeys.length-1]);
+
+  applyPanels();syncDrawer();
+}
+
+function setTab(v){
+  document.querySelectorAll(".nav,.botnav .b").forEach(x=>x.classList.toggle("active",x.dataset.tab===v&&!x.classList.contains("soon")));
+  ["value","smart","swing"].forEach(t=>{const el=document.getElementById("tab-"+t);if(el)el.style.display=t===v?"":"none";});
+  // 周期下拉只属于长投(每周);大佬/做T 是按当天,各自显示自己的日期
+  const showWk=(v==="value");
+  document.querySelectorAll("#weekSelM, aside .wkpick").forEach(e=>e.style.display=showWk?"":"none");
+}
+document.querySelectorAll(".nav,.botnav .b").forEach(t=>t.addEventListener("click",()=>{if(t.id==="gearD"||t.id==="gearB")return;if(!t.classList.contains("soon"))setTab(t.dataset.tab);}));
+
+/* ===== settings drawer ===== */
+function applyPanels(){document.querySelectorAll("[data-panel]").forEach(s=>{
+  if(s.classList.contains("sw"))return; s.classList.toggle("hidden",!CFG.panels[s.dataset.panel]);});}
+function syncDrawer(){
+  document.querySelectorAll("#segCount button").forEach(b=>b.classList.toggle("on",+b.dataset.v===CFG.count));
+  document.querySelectorAll("#segSort button").forEach(b=>b.classList.toggle("on",b.dataset.v===CFG.sort));
+  document.querySelectorAll("#segRot button").forEach(b=>b.classList.toggle("on",b.dataset.v===CFG.rot));
+  document.querySelectorAll(".sw[data-panel]").forEach(s=>s.classList.toggle("on",!!CFG.panels[s.dataset.panel]));
+  document.querySelectorAll(".sw[data-smart]").forEach(s=>s.classList.toggle("on",CFG.smart[s.dataset.smart]!==0));
+}
+function reapply(){saveCfg();render(LONG[curKey]);renderSmart(SMART[curSmartKey]);renderSwing(SWING[curSwingKey]);applyPanels();syncDrawer();}
+const overlay=document.getElementById("overlay"),drawer=document.getElementById("drawer");
+function openD(){overlay.classList.add("open");drawer.classList.add("open");syncDrawer();}
+function closeD(){overlay.classList.remove("open");drawer.classList.remove("open");}
+["gearM","gearD","gearB"].forEach(id=>document.getElementById(id).addEventListener("click",openD));
+document.getElementById("dclose").addEventListener("click",closeD);
+overlay.addEventListener("click",closeD);
+document.getElementById("segCount").addEventListener("click",e=>{if(e.target.dataset.v){CFG.count=+e.target.dataset.v;reapply();}});
+document.getElementById("segSort").addEventListener("click",e=>{if(e.target.dataset.v){CFG.sort=e.target.dataset.v;reapply();}});
+document.getElementById("segRot").addEventListener("click",e=>{if(e.target.dataset.v){CFG.rot=e.target.dataset.v;reapply();}});
+document.querySelectorAll(".sw[data-panel]").forEach(s=>s.addEventListener("click",()=>{CFG.panels[s.dataset.panel]=CFG.panels[s.dataset.panel]?0:1;reapply();}));
+document.querySelectorAll(".sw[data-smart]").forEach(s=>s.addEventListener("click",()=>{const k=s.dataset.smart;CFG.smart[k]=CFG.smart[k]?0:1;reapply();}));
+
+/* ===== 策略参数 config.json (长投 screen + 做T swing) ===== */
+const SC=["roe","roic","de","cur","mktcap","fscore","maxpe","mos"];
+const SW=["equity","budget","maxpos","risk","target","stepk","stopmult","commission","atrmin","atrmax","adxmax","pool","dailystop"];
+function loadScreenInputs(){
+  SC.forEach(k=>{const el=document.getElementById("c_"+k);if(el)el.value=CFG.screen[k];});
+  SW.forEach(k=>{const el=document.getElementById("s_"+k);if(el)el.value=CFG.swing[k];});
+}
+SC.forEach(k=>{const el=document.getElementById("c_"+k);if(el)el.addEventListener("input",()=>{const v=parseFloat(el.value);if(!isNaN(v)){CFG.screen[k]=v;saveCfg();}});});
+SW.forEach(k=>{const el=document.getElementById("s_"+k);if(el)el.addEventListener("input",()=>{const v=parseFloat(el.value);if(!isNaN(v)){CFG.swing[k]=v;saveCfg();if(curSwingKey)renderSwing(SWING[curSwingKey]);}});});
+document.getElementById("saveCfgBtn").addEventListener("click",async()=>{
+  saveCfg();
+  const payload={long:CFG.screen, swing:CFG.swing};   // 大佬 toggles are display-only
+  let ok=false;
+  try{const r=await fetch("/api/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});ok=r.ok;}catch(e){ok=false;}
+  if(!ok){
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="config.json";a.click();URL.revokeObjectURL(a.href);
+  }
+  const m=document.getElementById("saveMsg");m.textContent=ok?"✓ 已保存到 config.json,hermes 下次运行生效":"✓ 已导出 config.json,放到 hermes 目录即可";
+  m.classList.add("show");setTimeout(()=>m.classList.remove("show"),2600);
+});
+loadScreenInputs();
+
+/* tooltips: tap to toggle on touch / mobile */
+document.querySelectorAll(".info").forEach(ic=>ic.addEventListener("click",e=>{
+  e.stopPropagation();const open=ic.classList.contains("show");
+  document.querySelectorAll(".info.show").forEach(x=>x.classList.remove("show"));
+  if(!open)ic.classList.add("show");}));
+document.addEventListener("click",()=>document.querySelectorAll(".info.show").forEach(x=>x.classList.remove("show")));
+
+init();
+</script>
+</body>
+</html>
