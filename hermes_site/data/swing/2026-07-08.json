@@ -1,0 +1,626 @@
+{
+  "as_of": "2026-07-08 21:00",
+  "pool": 12,
+  "recommended_count": 2,
+  "not_recommended_count": 10,
+  "sources_ok": {
+    "price": true,
+    "intraday": true
+  },
+  "daily_stop": 500,
+  "daily_stop_note": "今日停手限额",
+  "base_rate_note": "≈35-50%的日内交易者盈利,仅供参考",
+  "disclaimer": "⚠ 仅供参考,非投资建议",
+  "stocks": [
+    {
+      "sym": "MOS",
+      "name": "Mosaic Company (The)",
+      "price": 21.12,
+      "regime": "trend",
+      "pause_reason": "本周区间过窄(0.9%<3%)；价格接近区间底部,可能突破下行",
+      "price_only": false,
+      "box_low": 21.12,
+      "vwap": 24.76,
+      "box_high": 21.3,
+      "stop": 19.68,
+      "step": 0.48,
+      "shares": 347,
+      "profit_per": "约 +$69,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [],
+      "action_now": "📥 买入 $21.1 — 目标卖 $21.3(+$0.2)",
+      "put_buy_levels": [
+        {
+          "price": 21.12,
+          "shares": 347
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": true,
+      "put_reasons": [
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: 价格接近区间上沿。可买 347 股 put @ $21.12,目标 $21.1。",
+      "recommendation": "不建议",
+      "recommendation_reason": "本周区间过窄(0.9%<3%)；价格接近区间底部,可能突破下行"
+    },
+    {
+      "sym": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "price": 128.63,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 125.73,
+      "vwap": 142.37,
+      "box_high": 134.37,
+      "stop": 118.25,
+      "step": 3.44,
+      "shares": 48,
+      "profit_per": "约 +$9,600",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 132.02,
+          "shares": 48
+        }
+      ],
+      "action_now": "📥 买入区 — 现价 $128.6,目标卖 $134.4(+$5.8)",
+      "put_buy_levels": [
+        {
+          "price": 128.58,
+          "shares": 48
+        },
+        {
+          "price": 132.02,
+          "shares": 48
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [],
+      "put_action_now": "",
+      "recommendation": "建议",
+      "recommendation_reason": "价格偏高位,可卖出或买跌",
+      "live": true
+    },
+    {
+      "sym": "SNDK",
+      "name": "Sandisk Corporation",
+      "price": 1669.48,
+      "regime": "trend",
+      "pause_reason": "ADX=29.9≥25,趋势过强",
+      "price_only": false,
+      "box_low": 1617.7,
+      "vwap": 945.56,
+      "box_high": 2032.22,
+      "stop": 1382.7,
+      "step": 100.22,
+      "shares": 1,
+      "profit_per": "约 +$200",
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 1783.57,
+          "shares": 1
+        },
+        {
+          "price": 1883.79,
+          "shares": 1
+        },
+        {
+          "price": 1984.0,
+          "shares": 1
+        }
+      ],
+      "action_now": "📥 买入区 — 现价 $1683.3,目标卖 $2032.2(+$348.9)",
+      "put_buy_levels": [
+        {
+          "price": 1683.35,
+          "shares": 1
+        },
+        {
+          "price": 1783.57,
+          "shares": 1
+        },
+        {
+          "price": 1883.79,
+          "shares": 1
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "ADX=29.9≥25,趋势过强",
+      "live": true
+    },
+    {
+      "sym": "INTC",
+      "name": "Intel Corporation",
+      "price": 108.35,
+      "regime": "trend",
+      "pause_reason": "价格接近区间底部,可能突破下行",
+      "price_only": false,
+      "box_low": 108.23,
+      "vwap": 79.9,
+      "box_high": 127.02,
+      "stop": 93.13,
+      "step": 5.03,
+      "shares": 33,
+      "profit_per": "约 +$6,600",
+      "rsi": "超卖",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 113.27,
+          "shares": 33
+        },
+        {
+          "price": 118.3,
+          "shares": 33
+        },
+        {
+          "price": 123.33,
+          "shares": 33
+        }
+      ],
+      "action_now": "📥 买入 $108.2 — 目标卖 $127.0(+$18.8)",
+      "put_buy_levels": [
+        {
+          "price": 108.23,
+          "shares": 33
+        },
+        {
+          "price": 113.27,
+          "shares": 33
+        },
+        {
+          "price": 118.3,
+          "shares": 33
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "价格接近区间底部,可能突破下行",
+      "live": true
+    },
+    {
+      "sym": "MU",
+      "name": "Micron Technology, Inc.",
+      "price": 938.38,
+      "regime": "trend",
+      "pause_reason": "价格接近区间底部,可能突破下行",
+      "price_only": false,
+      "box_low": 938.38,
+      "vwap": 633.52,
+      "box_high": 1154.11,
+      "stop": 798.77,
+      "step": 46.54,
+      "shares": 3,
+      "profit_per": "约 +$600",
+      "rsi": "超卖",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 984.92,
+          "shares": 3
+        },
+        {
+          "price": 1031.46,
+          "shares": 3
+        },
+        {
+          "price": 1077.99,
+          "shares": 3
+        },
+        {
+          "price": 1124.53,
+          "shares": 3
+        }
+      ],
+      "action_now": "📥 买入 $938.4 — 目标卖 $1154.1(+$215.7)",
+      "put_buy_levels": [
+        {
+          "price": 938.38,
+          "shares": 3
+        },
+        {
+          "price": 984.92,
+          "shares": 3
+        },
+        {
+          "price": 1031.46,
+          "shares": 3
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "价格接近区间底部,可能突破下行"
+    },
+    {
+      "sym": "SOFI",
+      "name": "SoFi Technologies, Inc.",
+      "price": 17.48,
+      "regime": "trend",
+      "pause_reason": "ADX=25.7≥25,趋势过强；价格接近区间底部,可能突破下行",
+      "price_only": false,
+      "box_low": 17.51,
+      "vwap": 18.42,
+      "box_high": 18.61,
+      "stop": 16.13,
+      "step": 0.46,
+      "shares": 361,
+      "profit_per": "约 +$72,200",
+      "rsi": "超卖",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 17.98,
+          "shares": 361
+        },
+        {
+          "price": 18.44,
+          "shares": 361
+        }
+      ],
+      "action_now": "📥 买入 $17.5 — 目标卖 $18.6(+$1.1)",
+      "put_buy_levels": [
+        {
+          "price": 17.51,
+          "shares": 361
+        },
+        {
+          "price": 17.98,
+          "shares": 361
+        },
+        {
+          "price": 18.44,
+          "shares": 361
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "ADX=25.7≥25,趋势过强；价格接近区间底部,可能突破下行",
+      "live": true
+    },
+    {
+      "sym": "TSLA",
+      "name": "Tesla, Inc.",
+      "price": 397.73,
+      "regime": "trend",
+      "pause_reason": "价格接近区间底部,可能突破下行",
+      "price_only": false,
+      "box_low": 393.45,
+      "vwap": 402.44,
+      "box_high": 425.3,
+      "stop": 367.08,
+      "step": 9.64,
+      "shares": 17,
+      "profit_per": "约 +$3,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 405.64,
+          "shares": 17
+        },
+        {
+          "price": 415.28,
+          "shares": 17
+        },
+        {
+          "price": 424.92,
+          "shares": 17
+        }
+      ],
+      "action_now": "📥 买入 $396.0 — 目标卖 $425.3(+$29.3)",
+      "put_buy_levels": [
+        {
+          "price": 396.0,
+          "shares": 17
+        },
+        {
+          "price": 405.64,
+          "shares": 17
+        },
+        {
+          "price": 415.28,
+          "shares": 17
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "价格接近区间底部,可能突破下行",
+      "live": true
+    },
+    {
+      "sym": "NVDA",
+      "name": "NVIDIA Corporation",
+      "price": 197.23,
+      "regime": "trend",
+      "pause_reason": "本周区间过窄(1.4%<3%)；价格接近区间顶部,可能突破上行",
+      "price_only": false,
+      "box_low": 194.83,
+      "vwap": 194.51,
+      "box_high": 197.58,
+      "stop": 187.47,
+      "step": 3.3,
+      "shares": 50,
+      "profit_per": "约 +$10,000",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [],
+      "action_now": "📤 卖出 $197.4 — 目标买回 $194.8(+$2.6)",
+      "put_buy_levels": [
+        {
+          "price": 197.38,
+          "shares": 50
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": true,
+      "put_reasons": [
+        "RSI超买(73)",
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: RSI超买(73), 价格接近区间上沿。可买 50 股 put @ $197.38,目标 $194.8。",
+      "recommendation": "不建议",
+      "recommendation_reason": "本周区间过窄(1.4%<3%)；价格接近区间顶部,可能突破上行",
+      "live": true
+    },
+    {
+      "sym": "META",
+      "name": "Meta Platforms, Inc.",
+      "price": 615.58,
+      "regime": "trend",
+      "pause_reason": "价格接近区间顶部,可能突破上行",
+      "price_only": false,
+      "box_low": 563.29,
+      "vwap": 621.68,
+      "box_high": 615.58,
+      "stop": 581.59,
+      "step": 11.33,
+      "shares": 14,
+      "profit_per": "约 +$2,800",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 604.25,
+          "shares": 14
+        },
+        {
+          "price": 592.92,
+          "shares": 14
+        },
+        {
+          "price": 581.59,
+          "shares": 14
+        },
+        {
+          "price": 570.26,
+          "shares": 14
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "📤 卖出 $615.6 — 目标买回 $563.3(+$52.3)",
+      "put_buy_levels": [
+        {
+          "price": 615.58,
+          "shares": 14
+        }
+      ],
+      "put_sell_levels": [
+        {
+          "price": 604.25,
+          "shares": 14
+        },
+        {
+          "price": 592.92,
+          "shares": 14
+        },
+        {
+          "price": 581.59,
+          "shares": 14
+        }
+      ],
+      "put_signal": true,
+      "put_reasons": [
+        "RSI超买(80)",
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: RSI超买(80), 价格接近区间上沿。可买 14 股 put @ $615.58,目标 $604.25(约 +$159)。",
+      "recommendation": "不建议",
+      "recommendation_reason": "价格接近区间顶部,可能突破上行"
+    },
+    {
+      "sym": "AVGO",
+      "name": "Broadcom Inc.",
+      "price": 370.78,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 360.45,
+      "vwap": 364.88,
+      "box_high": 377.75,
+      "stop": 344.14,
+      "step": 8.88,
+      "shares": 18,
+      "profit_per": "约 +$3,600",
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 361.9,
+          "shares": 18
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "🔄 高卖低买均可 — 买 $360.5 卖 $377.8,区间宽 $17.3",
+      "put_buy_levels": [
+        {
+          "price": 370.78,
+          "shares": 18
+        }
+      ],
+      "put_sell_levels": [
+        {
+          "price": 361.9,
+          "shares": 18
+        }
+      ],
+      "put_signal": true,
+      "put_reasons": [
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: 价格接近区间上沿。可买 18 股 put @ $370.78,目标 $361.9(约 +$160)。",
+      "recommendation": "建议",
+      "recommendation_reason": "价格偏低位,可买入等涨"
+    },
+    {
+      "sym": "WMT",
+      "name": "Walmart Inc.",
+      "price": 111.54,
+      "regime": "trend",
+      "pause_reason": "ADX=25.8≥25,趋势过强",
+      "price_only": false,
+      "box_low": 108.82,
+      "vwap": 121.9,
+      "box_high": 113.26,
+      "stop": 107.05,
+      "step": 1.5,
+      "shares": 111,
+      "profit_per": "约 +$22,200",
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 110.04,
+          "shares": 111
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 113.04,
+          "shares": 111
+        }
+      ],
+      "action_now": "📤 卖出区 — 现价 $111.5,目标买回 $108.8(+$2.7)",
+      "put_buy_levels": [
+        {
+          "price": 111.54,
+          "shares": 111
+        },
+        {
+          "price": 113.04,
+          "shares": 111
+        }
+      ],
+      "put_sell_levels": [
+        {
+          "price": 110.04,
+          "shares": 111
+        }
+      ],
+      "put_signal": false,
+      "put_reasons": [],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "ADX=25.8≥25,趋势过强"
+    },
+    {
+      "sym": "MARA",
+      "name": "MARA Holdings, Inc.",
+      "price": 12.05,
+      "regime": "trend",
+      "pause_reason": "价格接近区间底部,可能突破下行",
+      "price_only": false,
+      "box_low": 12.05,
+      "vwap": 10.76,
+      "box_high": 13.89,
+      "stop": 10.13,
+      "step": 0.64,
+      "shares": 260,
+      "profit_per": "约 +$52,000",
+      "rsi": "超卖",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 12.69,
+          "shares": 260
+        },
+        {
+          "price": 13.33,
+          "shares": 260
+        }
+      ],
+      "action_now": "📥 买入 $12.1 — 目标卖 $13.9(+$1.8)",
+      "put_buy_levels": [
+        {
+          "price": 12.05,
+          "shares": 260
+        },
+        {
+          "price": 12.69,
+          "shares": 260
+        },
+        {
+          "price": 13.33,
+          "shares": 260
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "recommendation": "不建议",
+      "recommendation_reason": "价格接近区间底部,可能突破下行"
+    }
+  ]
+}

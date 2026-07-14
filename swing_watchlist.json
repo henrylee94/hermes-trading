@@ -1,0 +1,72 @@
+{
+  "auto": [
+    {
+      "sym": "MOS",
+      "price": 22.38
+    }
+  ],
+  "pins": [
+    {
+      "sym": "PLTR",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "SNDK",
+      "fixed_shares": 5
+    },
+    {
+      "sym": "INTC",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "MU",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "SOFI",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "TSLA",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "NVDA",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "META",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "AVGO",
+      "fixed_shares": 100
+    },
+    {
+      "sym": "RKLB",
+      "fixed_shares": 100
+    }
+  ],
+  "exclude": [
+    "MOS",
+    "BA",
+    "TRI",
+    "SPGI",
+    "EBAY",
+    "MCO",
+    "ETN",
+    "JCI",
+    "CTAS",
+    "BF-B",
+    "KKR",
+    "ROP",
+    "SHOP",
+    "DD",
+    "ANET",
+    "PSKY",
+    "VEEV",
+    "VLO",
+    "TT",
+    "UBER"
+  ]
+}

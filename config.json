@@ -1,0 +1,27 @@
+{
+  "long": {
+    "roe": 12,
+    "roic": 10,
+    "de": 1,
+    "cur": 1.5,
+    "mktcap": 2,
+    "fscore": 7,
+    "maxpe": 15,
+    "mos": 25
+  },
+  "swing": {
+    "equity": 50000,
+    "budget": 20000,
+    "maxpos": 1,
+    "risk": 1,
+    "target": 200,
+    "stepk": 0.5,
+    "stopmult": 1.5,
+    "commission": 0,
+    "atrmin": 2.5,
+    "atrmax": 6,
+    "adxmax": 20,
+    "pool": 20,
+    "dailystop": 500
+  }
+}

@@ -1,0 +1,919 @@
+{
+  "as_of": "2026-06-29 22:59",
+  "pool": 23,
+  "active_count": 19,
+  "paused_count": 4,
+  "sources_ok": {
+    "price": true,
+    "intraday": true
+  },
+  "daily_stop": 500,
+  "daily_stop_note": "今日停手限额",
+  "base_rate_note": "≈35-50%的日内交易者盈利,仅供参考",
+  "disclaimer": "⚠ 仅供参考,非投资建议",
+  "stocks": [
+    {
+      "sym": "BA",
+      "name": "Boeing Company (The)",
+      "price": 215.43,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 208.87,
+      "vwap": 225.66,
+      "box_high": 229.03,
+      "stop": 205.3,
+      "step": 3.38,
+      "shares": 46,
+      "profit_per": "约 +$9,200",
+      "rsi": "超卖",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 212.05,
+          "shares": 46
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 218.8,
+          "shares": 46
+        },
+        {
+          "price": 222.18,
+          "shares": 46
+        },
+        {
+          "price": 225.55,
+          "shares": 46
+        },
+        {
+          "price": 228.93,
+          "shares": 46
+        }
+      ],
+      "action_now": "现价 $215.4 接近买入区 $212.05,RSI 超卖,可挂 46 股 @ $212.05,目标卖 $218.8(约 +$155)。"
+    },
+    {
+      "sym": "TRI",
+      "name": "Thomson Reuters Corp",
+      "price": 82.77,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 76.28,
+      "vwap": 91.7,
+      "box_high": 89.62,
+      "stop": 77.37,
+      "step": 1.8,
+      "shares": 92,
+      "profit_per": "约 +$18,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 80.97,
+          "shares": 92
+        },
+        {
+          "price": 79.17,
+          "shares": 92
+        },
+        {
+          "price": 77.37,
+          "shares": 92
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 84.57,
+          "shares": 92
+        },
+        {
+          "price": 86.37,
+          "shares": 92
+        },
+        {
+          "price": 88.17,
+          "shares": 92
+        }
+      ],
+      "action_now": "现价 $82.8 接近买入区 $80.97,RSI 中性,可挂 92 股 @ $80.97,目标卖 $84.57(约 +$166)。"
+    },
+    {
+      "sym": "SPGI",
+      "name": "S&P Global Inc.",
+      "price": 407.18,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 395.82,
+      "vwap": 436.06,
+      "box_high": 435.19,
+      "stop": 388.61,
+      "step": 6.19,
+      "shares": 24,
+      "profit_per": "约 +$4,800",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 400.99,
+          "shares": 24
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 413.37,
+          "shares": 24
+        },
+        {
+          "price": 419.56,
+          "shares": 24
+        },
+        {
+          "price": 425.75,
+          "shares": 24
+        },
+        {
+          "price": 431.94,
+          "shares": 24
+        }
+      ],
+      "action_now": "现价 $407.2 接近买入区 $400.99,RSI 中性,可挂 24 股 @ $400.99,目标卖 $413.37(约 +$149)。"
+    },
+    {
+      "sym": "EBAY",
+      "name": "eBay Inc.",
+      "price": 110.79,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 106.14,
+      "vwap": 97.25,
+      "box_high": 111.15,
+      "stop": 106.02,
+      "step": 1.59,
+      "shares": 90,
+      "profit_per": "约 +$18,000",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 109.2,
+          "shares": 90
+        },
+        {
+          "price": 107.61,
+          "shares": 90
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "现价 $110.8 接近买入区 $109.2,RSI 超买,可挂 90 股 @ $109.2,目标卖 $111.1。"
+    },
+    {
+      "sym": "MCO",
+      "name": "Moody's Corporation",
+      "price": 452.16,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 437.51,
+      "vwap": 455.01,
+      "box_high": 463.95,
+      "stop": 433.77,
+      "step": 6.13,
+      "shares": 22,
+      "profit_per": "约 +$4,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 446.03,
+          "shares": 22
+        },
+        {
+          "price": 439.9,
+          "shares": 22
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 458.29,
+          "shares": 22
+        }
+      ],
+      "action_now": "现价 $452.2 接近买入区 $446.03,RSI 中性,可挂 22 股 @ $446.03,目标卖 $458.29(约 +$135)。"
+    },
+    {
+      "sym": "ETN",
+      "name": "Eaton Corporation, PLC",
+      "price": 404.37,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 381.06,
+      "vwap": 375.82,
+      "box_high": 432.7,
+      "stop": 379.78,
+      "step": 8.2,
+      "shares": 20,
+      "profit_per": "约 +$4,000",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 396.17,
+          "shares": 20
+        },
+        {
+          "price": 387.98,
+          "shares": 20
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 412.57,
+          "shares": 20
+        },
+        {
+          "price": 420.76,
+          "shares": 20
+        },
+        {
+          "price": 428.96,
+          "shares": 20
+        }
+      ],
+      "action_now": "现价 $404.4 接近买入区 $396.17,RSI 中性,可挂 20 股 @ $396.17,目标卖 $412.57(约 +$164)。"
+    },
+    {
+      "sym": "JCI",
+      "name": "Johnson Controls International ",
+      "price": 139.53,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 136.29,
+      "vwap": 132.67,
+      "box_high": 149.38,
+      "stop": 132.35,
+      "step": 2.39,
+      "shares": 69,
+      "profit_per": "约 +$13,800",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 137.14,
+          "shares": 69
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 141.93,
+          "shares": 69
+        },
+        {
+          "price": 144.32,
+          "shares": 69
+        },
+        {
+          "price": 146.71,
+          "shares": 69
+        },
+        {
+          "price": 149.11,
+          "shares": 69
+        }
+      ],
+      "action_now": "现价 $139.5 接近买入区 $137.14,RSI 中性,可挂 69 股 @ $137.14,目标卖 $141.93(约 +$165)。"
+    },
+    {
+      "sym": "CTAS",
+      "name": "Cintas Corporation",
+      "price": 171.31,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 167.86,
+      "vwap": 181.66,
+      "box_high": 182.59,
+      "stop": 164.94,
+      "step": 2.12,
+      "shares": 58,
+      "profit_per": "约 +$11,600",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 169.19,
+          "shares": 58
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 173.43,
+          "shares": 58
+        },
+        {
+          "price": 175.56,
+          "shares": 58
+        },
+        {
+          "price": 177.68,
+          "shares": 58
+        },
+        {
+          "price": 179.81,
+          "shares": 58
+        },
+        {
+          "price": 181.93,
+          "shares": 58
+        }
+      ],
+      "action_now": "现价 $171.3 接近买入区 $169.19,RSI 中性,可挂 58 股 @ $169.19,目标卖 $173.43(约 +$123)。"
+    },
+    {
+      "sym": "UBER",
+      "name": "Uber Technologies, Inc.",
+      "price": 76.26,
+      "regime": "trend",
+      "pause_reason": "收盘高于区间上沿",
+      "price_only": true,
+      "box_low": 67.63,
+      "vwap": 75.24,
+      "box_high": 75.95,
+      "stop": null,
+      "step": null,
+      "shares": null,
+      "profit_per": null,
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [],
+      "action_now": ""
+    },
+    {
+      "sym": "BF-B",
+      "name": "Brown Forman Inc",
+      "price": 27.75,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 24.45,
+      "vwap": 26.55,
+      "box_high": 28.07,
+      "stop": 26.51,
+      "step": 0.41,
+      "shares": 360,
+      "profit_per": "约 +$72,000",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 27.34,
+          "shares": 360
+        },
+        {
+          "price": 26.92,
+          "shares": 360
+        },
+        {
+          "price": 26.51,
+          "shares": 360
+        },
+        {
+          "price": 26.1,
+          "shares": 360
+        },
+        {
+          "price": 25.68,
+          "shares": 360
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "现价 $27.8 接近买入区 $27.34,RSI 中性,可挂 360 股 @ $27.34,目标卖 $28.1。"
+    },
+    {
+      "sym": "KKR",
+      "name": "KKR & Co. Inc.",
+      "price": 89.69,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 89.34,
+      "vwap": 99.53,
+      "box_high": 99.66,
+      "stop": 84.11,
+      "step": 1.86,
+      "shares": 89,
+      "profit_per": "约 +$17,800",
+      "rsi": "超卖",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [
+        {
+          "price": 91.55,
+          "shares": 89
+        },
+        {
+          "price": 93.41,
+          "shares": 89
+        },
+        {
+          "price": 95.27,
+          "shares": 89
+        },
+        {
+          "price": 97.13,
+          "shares": 89
+        },
+        {
+          "price": 98.99,
+          "shares": 89
+        }
+      ],
+      "action_now": "现价 $89.7 在区间上方,等待回落至 $91.5 以下再考虑买入。"
+    },
+    {
+      "sym": "ROP",
+      "name": "Roper Technologies, Inc.",
+      "price": 337.94,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 325.72,
+      "vwap": 353.75,
+      "box_high": 341.51,
+      "stop": 324.01,
+      "step": 4.64,
+      "shares": 29,
+      "profit_per": "约 +$5,800",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 333.3,
+          "shares": 29
+        },
+        {
+          "price": 328.65,
+          "shares": 29
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "现价 $337.9 接近买入区 $333.3,RSI 超买,可挂 29 股 @ $333.3,目标卖 $341.5。"
+    },
+    {
+      "sym": "MOS",
+      "name": "Mosaic Company (The)",
+      "price": 22.19,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 20.25,
+      "vwap": 24.92,
+      "box_high": 23.88,
+      "stop": 20.7,
+      "step": 0.5,
+      "shares": 336,
+      "profit_per": "约 +$67,200",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 21.69,
+          "shares": 336
+        },
+        {
+          "price": 21.2,
+          "shares": 336
+        },
+        {
+          "price": 20.7,
+          "shares": 336
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 22.69,
+          "shares": 336
+        },
+        {
+          "price": 23.18,
+          "shares": 336
+        },
+        {
+          "price": 23.68,
+          "shares": 336
+        }
+      ],
+      "action_now": "现价 $22.2 接近买入区 $21.69,RSI 中性,可挂 336 股 @ $21.69,目标卖 $22.69(约 +$168)。"
+    },
+    {
+      "sym": "SHOP",
+      "name": "Shopify Inc.",
+      "price": 118.29,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 104.11,
+      "vwap": 120.44,
+      "box_high": 120.81,
+      "stop": 110.09,
+      "step": 2.73,
+      "shares": 60,
+      "profit_per": "约 +$12,000",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 115.55,
+          "shares": 60
+        },
+        {
+          "price": 112.82,
+          "shares": 60
+        },
+        {
+          "price": 110.09,
+          "shares": 60
+        },
+        {
+          "price": 107.36,
+          "shares": 60
+        },
+        {
+          "price": 104.62,
+          "shares": 60
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "现价 $118.3 接近买入区 $115.55,RSI 超买,可挂 60 股 @ $115.55,目标卖 $120.8。"
+    },
+    {
+      "sym": "DD",
+      "name": "DuPont de Nemours, Inc.",
+      "price": 133.09,
+      "regime": "trend",
+      "pause_reason": "收盘低于区间下沿",
+      "price_only": true,
+      "box_low": 134.35,
+      "vwap": 138.87,
+      "box_high": 148.25,
+      "stop": null,
+      "step": null,
+      "shares": null,
+      "profit_per": null,
+      "rsi": "超卖",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [],
+      "action_now": ""
+    },
+    {
+      "sym": "TT",
+      "name": "Trane Technologies plc",
+      "price": 480.29,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 442.25,
+      "vwap": 439.24,
+      "box_high": 497.89,
+      "stop": 456.2,
+      "step": 8.03,
+      "shares": 20,
+      "profit_per": "约 +$4,000",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 472.26,
+          "shares": 20
+        },
+        {
+          "price": 464.23,
+          "shares": 20
+        },
+        {
+          "price": 456.2,
+          "shares": 20
+        },
+        {
+          "price": 448.17,
+          "shares": 20
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 488.31,
+          "shares": 20
+        },
+        {
+          "price": 496.34,
+          "shares": 20
+        }
+      ],
+      "action_now": "现价 $480.3 接近买入区 $472.26,RSI 中性,可挂 20 股 @ $472.26,目标卖 $488.31(约 +$160)。"
+    },
+    {
+      "sym": "VEEV",
+      "name": "Veeva Systems Inc.",
+      "price": 176.21,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 150.39,
+      "vwap": 178.36,
+      "box_high": 186.51,
+      "stop": 164.94,
+      "step": 3.76,
+      "shares": 44,
+      "profit_per": "约 +$8,800",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 172.45,
+          "shares": 44
+        },
+        {
+          "price": 168.69,
+          "shares": 44
+        },
+        {
+          "price": 164.94,
+          "shares": 44
+        },
+        {
+          "price": 161.18,
+          "shares": 44
+        },
+        {
+          "price": 157.42,
+          "shares": 44
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 179.97,
+          "shares": 44
+        },
+        {
+          "price": 183.73,
+          "shares": 44
+        }
+      ],
+      "action_now": "现价 $176.2 接近买入区 $172.45,RSI 超买,可挂 44 股 @ $172.45,目标卖 $179.97(约 +$165)。"
+    },
+    {
+      "sym": "VLO",
+      "name": "Valero Energy Corporation",
+      "price": 268.46,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 236.05,
+      "vwap": 223.0,
+      "box_high": 269.1,
+      "stop": 254.06,
+      "step": 4.8,
+      "shares": 34,
+      "profit_per": "约 +$6,800",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 263.66,
+          "shares": 34
+        },
+        {
+          "price": 258.86,
+          "shares": 34
+        },
+        {
+          "price": 254.06,
+          "shares": 34
+        },
+        {
+          "price": 249.25,
+          "shares": 34
+        },
+        {
+          "price": 244.45,
+          "shares": 34
+        }
+      ],
+      "sell_levels": [],
+      "action_now": "现价 $268.5 接近买入区 $263.66,RSI 超买,可挂 34 股 @ $263.66,目标卖 $269.1。"
+    },
+    {
+      "sym": "PSKY",
+      "name": "Paramount Skydance Corporation",
+      "price": 9.88,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 9.41,
+      "vwap": 10.78,
+      "box_high": 10.94,
+      "stop": 9.24,
+      "step": 0.21,
+      "shares": 782,
+      "profit_per": "约 +$156,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 9.66,
+          "shares": 782
+        },
+        {
+          "price": 9.45,
+          "shares": 782
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 10.09,
+          "shares": 782
+        },
+        {
+          "price": 10.3,
+          "shares": 782
+        },
+        {
+          "price": 10.51,
+          "shares": 782
+        },
+        {
+          "price": 10.73,
+          "shares": 782
+        }
+      ],
+      "action_now": "现价 $9.9 接近买入区 $9.66,RSI 中性,可挂 782 股 @ $9.66,目标卖 $10.09(约 +$168)。"
+    },
+    {
+      "sym": "ANET",
+      "name": "Arista Networks, Inc.",
+      "price": 161.05,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 149.39,
+      "vwap": 145.38,
+      "box_high": 177.48,
+      "stop": 148.49,
+      "step": 4.19,
+      "shares": 39,
+      "profit_per": "约 +$7,800",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 156.86,
+          "shares": 39
+        },
+        {
+          "price": 152.68,
+          "shares": 39
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 165.24,
+          "shares": 39
+        },
+        {
+          "price": 169.42,
+          "shares": 39
+        },
+        {
+          "price": 173.61,
+          "shares": 39
+        }
+      ],
+      "action_now": "现价 $161.1 接近买入区 $156.86,RSI 中性,可挂 39 股 @ $156.86,目标卖 $165.24(约 +$163)。"
+    },
+    {
+      "sym": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "price": 117.49,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 106.37,
+      "vwap": 144.67,
+      "box_high": 156.14,
+      "stop": 107.71,
+      "step": 3.26,
+      "shares": 51,
+      "profit_per": "约 +$10,200",
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 114.23,
+          "shares": 51
+        },
+        {
+          "price": 110.97,
+          "shares": 51
+        },
+        {
+          "price": 107.71,
+          "shares": 51
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 120.75,
+          "shares": 51
+        },
+        {
+          "price": 124.01,
+          "shares": 51
+        },
+        {
+          "price": 127.27,
+          "shares": 51
+        },
+        {
+          "price": 130.54,
+          "shares": 51
+        },
+        {
+          "price": 133.8,
+          "shares": 51
+        }
+      ],
+      "action_now": "现价 $117.5 接近买入区 $114.23,RSI 中性,可挂 51 股 @ $114.23,目标卖 $120.75(约 +$166)。"
+    },
+    {
+      "sym": "SNDK",
+      "name": "Sandisk Corporation",
+      "price": 1925.26,
+      "regime": "trend",
+      "pause_reason": "ADX=40.1≥25,趋势过强",
+      "price_only": true,
+      "box_low": 1514.36,
+      "vwap": 888.67,
+      "box_high": 2333.05,
+      "stop": null,
+      "step": null,
+      "shares": null,
+      "profit_per": null,
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [],
+      "action_now": ""
+    },
+    {
+      "sym": "INTC",
+      "name": "Intel Corporation",
+      "price": 123.34,
+      "regime": "trend",
+      "pause_reason": "ADX=26.0≥25,趋势过强",
+      "price_only": true,
+      "box_low": 98.33,
+      "vwap": 76.37,
+      "box_high": 141.45,
+      "stop": null,
+      "step": null,
+      "shares": null,
+      "profit_per": null,
+      "rsi": "超卖",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [],
+      "sell_levels": [],
+      "action_now": ""
+    }
+  ]
+}

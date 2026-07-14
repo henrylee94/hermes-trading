@@ -1,0 +1,41 @@
+# Dependencies
+venv/
+venv_new/
+venv_link_test/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment / Secrets
+.env
+.env.*
+*.env
+
+# Runtime data
+cache/
+logs/
+*.log
+*.pid
+*.lock
+
+# Backups
+*.bak
+*.bak.*
+*.swp
+*.swo
+*~
+
+# Data (generated, not source)
+smart/
+swing/
+value/
+tracked_entities.json
+*.parquet
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

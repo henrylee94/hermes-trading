@@ -1,0 +1,647 @@
+{
+  "as_of": "2026-07-14 21:01",
+  "pool": 11,
+  "recommended_count": 5,
+  "not_recommended_count": 6,
+  "sources_ok": {
+    "price": true,
+    "intraday": true
+  },
+  "daily_stop": 500,
+  "daily_stop_note": "今日停手限额",
+  "base_rate_note": "≈35-50%的日内交易者盈利,仅供参考",
+  "disclaimer": "⚠ 仅供参考,非投资建议",
+  "stocks": [
+    {
+      "sym": "MOS",
+      "name": "Mosaic Company (The)",
+      "price": 22.31,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 21.71,
+      "vwap": 24.64,
+      "box_high": 22.52,
+      "stop": 20.92,
+      "step": 0.46,
+      "shares": 360,
+      "profit_per": "约 +$72,000",
+      "rsi": "超买",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 21.71,
+          "shares": 360
+        },
+        {
+          "price": 22.01,
+          "shares": 360
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 22.52,
+          "shares": 360
+        }
+      ],
+      "action_now": "📤 做空 EMA60>30>5 偏空 Vol✗(0.7x)\n  卖出区: $22.31 - $22.52\n  买回目标: $21.71\n  止损: > $22.63",
+      "ema_trend": "bearish",
+      "ema_label": "EMA60>30>5 偏空",
+      "vol_ratio": 0.72,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 22.31,
+          "shares": 360
+        }
+      ],
+      "put_sell_levels": [
+        {
+          "price": 21.85,
+          "shares": 360
+        }
+      ],
+      "put_signal": true,
+      "put_reasons": [
+        "RSI超买(95)",
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: RSI超买(95), 价格接近区间上沿。可买 360 股 put @ $22.31,目标 $21.85(约 +$166)。",
+      "support": 21.71,
+      "resistance": 22.52,
+      "recommendation": "建议",
+      "recommendation_reason": "偏空+接近压力,适合做空"
+    },
+    {
+      "sym": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "price": 130.04,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 126.19,
+      "vwap": 141.18,
+      "box_high": 130.72,
+      "stop": 119.93,
+      "step": 3.37,
+      "shares": 49,
+      "profit_per": "约 +$9,800",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 126.19,
+          "shares": 49
+        },
+        {
+          "price": 128.12,
+          "shares": 49
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 130.72,
+          "shares": 49
+        }
+      ],
+      "action_now": "📤 做空 EMA60>30>5 偏空 Vol✗(0.8x)\n  卖出区: $130.04 - $130.72\n  买回目标: $126.19\n  止损: > $131.37",
+      "ema_trend": "bearish",
+      "ema_label": "EMA60>30>5 偏空",
+      "vol_ratio": 0.78,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 130.04,
+          "shares": 49
+        }
+      ],
+      "put_sell_levels": [
+        {
+          "price": 126.67,
+          "shares": 49
+        }
+      ],
+      "put_signal": true,
+      "put_reasons": [
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: 价格接近区间上沿。可买 49 股 put @ $130.04,目标 $126.67(约 +$165)。",
+      "support": 126.19,
+      "resistance": 130.72,
+      "recommendation": "建议",
+      "recommendation_reason": "偏空+接近压力,适合做空"
+    },
+    {
+      "sym": "SNDK",
+      "name": "Sandisk Corporation",
+      "price": 1673.97,
+      "regime": "trend",
+      "pause_reason": "收盘低于区间下沿",
+      "price_only": false,
+      "box_low": 1773.0,
+      "vwap": 984.68,
+      "box_high": 1800.0,
+      "stop": 1362.09,
+      "step": 103.96,
+      "shares": 1,
+      "profit_per": "约 +$200",
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 1773.0,
+          "shares": 1
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 1800.0,
+          "shares": 1
+        },
+        {
+          "price": 1736.98,
+          "shares": 1
+        }
+      ],
+      "action_now": "📥 区间低位可买 EMA交叉 方向不明 Vol✓(1.0x)\n  买入区: $1773.00 - $1673.97\n  卖出目标: $1800.00\n  止损: < $1764.13",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 1.02,
+      "vol_enough": true,
+      "put_buy_levels": [
+        {
+          "price": 1673.97,
+          "shares": 1
+        },
+        {
+          "price": 1777.93,
+          "shares": 1
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "support": 1773.0,
+      "resistance": 1800.0,
+      "recommendation": "不建议",
+      "recommendation_reason": "收盘低于区间下沿"
+    },
+    {
+      "sym": "INTC",
+      "name": "Intel Corporation",
+      "price": 103.12,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 101.79,
+      "vwap": 81.88,
+      "box_high": 106.17,
+      "stop": 88.77,
+      "step": 4.78,
+      "shares": 34,
+      "profit_per": "约 +$6,800",
+      "rsi": "超卖",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 101.79,
+          "shares": 34
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 106.17,
+          "shares": 34
+        }
+      ],
+      "action_now": "📥 区间低位可买 EMA交叉 方向不明 Vol✗(0.7x)\n  买入区: $101.79 - $103.12\n  卖出目标: $106.17\n  止损: < $101.28",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 0.7,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 103.12,
+          "shares": 34
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": true,
+      "put_reasons": [
+        "价格接近区间上沿",
+        "价格高于VWAP"
+      ],
+      "put_action_now": "🔴 看跌信号: 价格接近区间上沿, 价格高于VWAP。可买 34 股 put @ $103.12,目标 $101.8。",
+      "support": 101.79,
+      "resistance": 106.17,
+      "recommendation": "建议",
+      "recommendation_reason": "区间低位,可买入"
+    },
+    {
+      "sym": "MU",
+      "name": "Micron Technology, Inc.",
+      "price": 937.0,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 902.6,
+      "vwap": 648.11,
+      "box_high": 943.5,
+      "stop": 807.58,
+      "step": 43.14,
+      "shares": 3,
+      "profit_per": "约 +$600",
+      "rsi": "超卖",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 902.6,
+          "shares": 3
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 943.5,
+          "shares": 3
+        }
+      ],
+      "action_now": "📤 区间高位可卖 EMA交叉 方向不明 Vol✗(0.7x)\n  卖出区: $937.00 - $943.50\n  买回目标: $902.60\n  止损: > $948.22",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 0.65,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 937.0,
+          "shares": 3
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": true,
+      "put_reasons": [
+        "价格接近区间上沿",
+        "价格高于VWAP"
+      ],
+      "put_action_now": "🔴 看跌信号: 价格接近区间上沿, 价格高于VWAP。可买 3 股 put @ $937.0,目标 $902.6。",
+      "support": 902.6,
+      "resistance": 943.5,
+      "recommendation": "建议",
+      "recommendation_reason": "区间高位,可卖出"
+    },
+    {
+      "sym": "SOFI",
+      "name": "SoFi Technologies, Inc.",
+      "price": 18.13,
+      "regime": "trend",
+      "pause_reason": "ADX=26.2≥25,趋势过强；收盘低于区间下沿",
+      "price_only": false,
+      "box_low": 18.62,
+      "vwap": 18.22,
+      "box_high": 19.24,
+      "stop": 16.68,
+      "step": 0.48,
+      "shares": 344,
+      "profit_per": "约 +$68,800",
+      "rsi": "中性",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 18.62,
+          "shares": 344
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 19.24,
+          "shares": 344
+        },
+        {
+          "price": 18.68,
+          "shares": 344
+        }
+      ],
+      "action_now": "📥 区间低位可买 EMA交叉 方向不明 Vol✓(1.1x)\n  买入区: $18.62 - $18.13\n  卖出目标: $19.24\n  止损: < $18.53",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 1.09,
+      "vol_enough": true,
+      "put_buy_levels": [
+        {
+          "price": 18.13,
+          "shares": 344
+        },
+        {
+          "price": 18.61,
+          "shares": 344
+        },
+        {
+          "price": 19.1,
+          "shares": 344
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [],
+      "put_action_now": "",
+      "support": 18.62,
+      "resistance": 19.24,
+      "recommendation": "不建议",
+      "recommendation_reason": "ADX=26.2≥25,趋势过强；收盘低于区间下沿"
+    },
+    {
+      "sym": "TSLA",
+      "name": "Tesla, Inc.",
+      "price": 394.76,
+      "regime": "trend",
+      "pause_reason": "区间过窄(0.7%<1.5%),不适合做T；收盘低于区间下沿",
+      "price_only": false,
+      "box_low": 402.81,
+      "vwap": 401.05,
+      "box_high": 405.4,
+      "stop": 366.87,
+      "step": 9.3,
+      "shares": 17,
+      "profit_per": "约 +$3,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 402.81,
+          "shares": 17
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 405.4,
+          "shares": 17
+        },
+        {
+          "price": 400.08,
+          "shares": 17
+        }
+      ],
+      "action_now": "⏳ 偏空但接近支撑 EMA60>30>5 偏空 Vol✗(0.6x)\n  等反弹到 $405.40 附近再空\n  支撑: $402.81 止损: > $407.43",
+      "ema_trend": "bearish",
+      "ema_label": "EMA60>30>5 偏空",
+      "vol_ratio": 0.64,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 394.76,
+          "shares": 17
+        },
+        {
+          "price": 404.06,
+          "shares": 17
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [],
+      "put_action_now": "",
+      "support": 402.81,
+      "resistance": 405.4,
+      "recommendation": "不建议",
+      "recommendation_reason": "区间过窄(0.7%<1.5%),不适合做T；收盘低于区间下沿"
+    },
+    {
+      "sym": "NVDA",
+      "name": "NVIDIA Corporation",
+      "price": 203.53,
+      "regime": "range",
+      "pause_reason": null,
+      "price_only": false,
+      "box_low": 203.35,
+      "vwap": 194.85,
+      "box_high": 210.57,
+      "stop": 192.7,
+      "step": 3.61,
+      "shares": 46,
+      "profit_per": "约 +$9,200",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 203.35,
+          "shares": 46
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 210.57,
+          "shares": 46
+        },
+        {
+          "price": 207.05,
+          "shares": 46
+        }
+      ],
+      "action_now": "📥 区间低位可买 EMA交叉 方向不明 Vol✗(0.7x)\n  买入区: $203.35 - $203.53\n  卖出目标: $210.57\n  止损: < $202.33",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 0.67,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 203.53,
+          "shares": 46
+        },
+        {
+          "price": 207.14,
+          "shares": 46
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "support": 203.35,
+      "resistance": 210.57,
+      "recommendation": "建议",
+      "recommendation_reason": "区间低位,可买入"
+    },
+    {
+      "sym": "META",
+      "name": "Meta Platforms, Inc.",
+      "price": 656.73,
+      "regime": "trend",
+      "pause_reason": "连续3+日收盘在Bollinger上轨外；收盘低于区间下沿",
+      "price_only": false,
+      "box_low": 658.01,
+      "vwap": 622.25,
+      "box_high": 676.62,
+      "stop": 617.71,
+      "step": 13.01,
+      "shares": 12,
+      "profit_per": "约 +$2,400",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 658.01,
+          "shares": 12
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 676.62,
+          "shares": 12
+        },
+        {
+          "price": 666.67,
+          "shares": 12
+        }
+      ],
+      "action_now": "📥 区间低位可买 EMA交叉 方向不明 Vol✗(0.8x)\n  买入区: $658.01 - $656.73\n  卖出目标: $676.62\n  止损: < $654.72",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 0.77,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 656.73,
+          "shares": 12
+        },
+        {
+          "price": 669.74,
+          "shares": 12
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": true,
+      "put_reasons": [
+        "随机指标超买(87)",
+        "价格高于VWAP"
+      ],
+      "put_action_now": "🔴 看跌信号: 随机指标超买(87), 价格高于VWAP。可买 12 股 put @ $656.73,目标 $658.0。",
+      "support": 658.01,
+      "resistance": 676.62,
+      "recommendation": "不建议",
+      "recommendation_reason": "连续3+日收盘在Bollinger上轨外；收盘低于区间下沿"
+    },
+    {
+      "sym": "AVGO",
+      "name": "Broadcom Inc.",
+      "price": 384.05,
+      "regime": "trend",
+      "pause_reason": "区间过窄(0.0%<1.5%),不适合做T；收盘低于区间下沿",
+      "price_only": false,
+      "box_low": 395.7,
+      "vwap": 366.26,
+      "box_high": 395.74,
+      "stop": 357.91,
+      "step": 8.71,
+      "shares": 19,
+      "profit_per": "约 +$3,800",
+      "rsi": "中性",
+      "adx": "区间震荡",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 395.7,
+          "shares": 19
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 395.74,
+          "shares": 19
+        },
+        {
+          "price": 389.9,
+          "shares": 19
+        }
+      ],
+      "action_now": "📥 区间低位可买 EMA交叉 方向不明 Vol✗(0.5x)\n  买入区: $395.70 - $384.05\n  卖出目标: $395.74\n  止损: < $393.72",
+      "ema_trend": "neutral",
+      "ema_label": "EMA交叉 方向不明",
+      "vol_ratio": 0.46,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 384.05,
+          "shares": 19
+        },
+        {
+          "price": 392.76,
+          "shares": 19
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": false,
+      "put_reasons": [
+        "价格高于VWAP"
+      ],
+      "put_action_now": "",
+      "support": 395.7,
+      "resistance": 395.74,
+      "recommendation": "不建议",
+      "recommendation_reason": "区间过窄(0.0%<1.5%),不适合做T；收盘低于区间下沿"
+    },
+    {
+      "sym": "RKLB",
+      "name": "Rocket Lab Corporation",
+      "price": 76.73,
+      "regime": "trend",
+      "pause_reason": "区间过窄(1.2%<1.5%),不适合做T；收盘低于区间下沿",
+      "price_only": false,
+      "box_low": 79.06,
+      "vwap": 91.05,
+      "box_high": 79.97,
+      "stop": 63.94,
+      "step": 4.26,
+      "shares": 39,
+      "profit_per": "约 +$7,800",
+      "rsi": "超卖",
+      "adx": "趋势中",
+      "earn_days": 999,
+      "buy_levels": [
+        {
+          "price": 79.06,
+          "shares": 39
+        }
+      ],
+      "sell_levels": [
+        {
+          "price": 79.97,
+          "shares": 39
+        }
+      ],
+      "action_now": "⏳ 偏空但接近支撑 EMA60>30>5 偏空 Vol✗(0.6x)\n  等反弹到 $79.97 附近再空\n  支撑: $79.06 止损: > $80.37",
+      "ema_trend": "bearish",
+      "ema_label": "EMA60>30>5 偏空",
+      "vol_ratio": 0.57,
+      "vol_enough": false,
+      "put_buy_levels": [
+        {
+          "price": 76.73,
+          "shares": 39
+        }
+      ],
+      "put_sell_levels": [],
+      "put_signal": true,
+      "put_reasons": [
+        "价格接近区间上沿"
+      ],
+      "put_action_now": "🔴 看跌信号: 价格接近区间上沿。可买 39 股 put @ $76.73,目标 $79.1。",
+      "support": 79.06,
+      "resistance": 79.97,
+      "recommendation": "不建议",
+      "recommendation_reason": "区间过窄(1.2%<1.5%),不适合做T；收盘低于区间下沿"
+    }
+  ]
+}

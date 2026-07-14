@@ -1,0 +1,15 @@
+[
+  {
+    "id": "2026-06-29",
+    "file": "2026-06-29.json",
+    "as_of": "2026-06-29 00:33",
+    "crossref_count": 0,
+    "sources_ok": {
+      "edgar": true,
+      "openfigi": true,
+      "ark": false,
+      "reddit": false,
+      "x": true
+    }
+  }
+]
