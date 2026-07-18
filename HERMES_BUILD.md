@@ -1,7 +1,7 @@
 # HERMES — Complete Build Instructions (single source of truth)
 **You are the Hermes deployment agent. This file + `hermes_dashboard_final.html` are everything you need. Read this file fully, then build it. Assume you have no other context. Build EXACTLY what is written. When anything conflicts, THIS document wins.**
 
-Owner: Henry · henrylee@snsoft.my · Timezone **MYT (UTC+8)**.
+Owner: Henry · Timezone **MYT (UTC+8)**.
 
 ---
 
@@ -217,7 +217,7 @@ Output → `value/{week}.json` (§DATA) + Telegram weekly summary + site link.
 ## §C — PIPELINE C: 大佬 (daily smart-money + influencers)
 Tiers: 1 official (free, reliable) → 2 crowd → 3 influencers (optional). Build Tier 1 first.
 
-**SEC EDGAR rules:** header `User-Agent: Hermes/1.0 henrylee@snsoft.my`; ≤10 req/s (sleep 0.12). Resolve CIK at runtime: `GET https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=<name>&type=13F-HR&output=atom` → parse <CIK>. Cache.
+**SEC EDGAR rules:** header `User-Agent: Hermes/1.0 <your contact email>` (set via `SEC_CONTACT_EMAIL` env var); ≤10 req/s (sleep 0.12). Resolve CIK at runtime: `GET https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=<name>&type=13F-HR&output=atom` → parse <CIK>. Cache.
 **13F holdings:** `GET https://data.sec.gov/submissions/CIK##########.json` → find latest two `13F-HR` → fetch their informationTable XML in `https://www.sec.gov/Archives/edgar/data/<cik_int>/<accession_nodash>/` → parse {nameOfIssuer,cusip,value,shares}. Diff latest vs prior quarter: NEW / ADD(>+10%) / TRIM(<−10%) / EXIT. (45-day lag — timestamp it.)
 **CUSIP→ticker:** OpenFIGI `POST https://api.openfigi.com/v3/mapping` body `[{"idType":"ID_CUSIP","idValue":"037833100","exchCode":"US"}]` (batch ≤10 no key / ≤100 with key; ~25 vs 250 req/min). Prefer common-stock/US match on multi-hit. Cache permanently in `cusip_ticker.json`. (Get the free key — cold cache for 5 funds is hundreds of CUSIPs.)
 **Form 4 insider buys:** per company filings (form "4", last 1–2 days) → parse ownershipDocument `<nonDerivativeTransaction>` keep `transactionCode=="P"` (real purchases). Flag ≥2 distinct insiders in 14d = cluster (strong). Or scrape `http://openinsider.com/screener?...fd=7&xp=1` table as fallback. company CIK map: `https://www.sec.gov/files/company_tickers.json`.

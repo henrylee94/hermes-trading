@@ -65,7 +65,7 @@ log = setup_logger("pipeline_c_smart")
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-SEC_HEADERS = {"User-Agent": "Hermes/1.0 henrylee@snsoft.my"}
+SEC_HEADERS = {"User-Agent": f"Hermes/1.0 {os.environ.get('SEC_CONTACT_EMAIL', 'contact@example.com')}"}
 SEC_RATE_DELAY = 0.12  # ≤10 req/s
 OPENFIGI_BASE = "https://api.openfigi.com/v3/mapping"
 ARK_BASE = "https://ARK Invest ETF - Holdings"
