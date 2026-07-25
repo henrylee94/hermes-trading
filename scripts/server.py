@@ -77,6 +77,32 @@ def _save_config(cfg: dict):
 
 
 # ---------------------------------------------------------------------------
+# AI Analyst imports (lazy)
+# ---------------------------------------------------------------------------
+_ai_analyst = None
+
+
+def _get_ai_analyst():
+    global _ai_analyst
+    if _ai_analyst is None:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from ai_analyst import (
+            start_analysis, get_job_status, get_history,
+            list_tickers, get_token_summary, get_analysis, init_db,
+        )
+        init_db()
+        _ai_analyst = {
+            "start": start_analysis,
+            "status": get_job_status,
+            "history": get_history,
+            "tickers": list_tickers,
+            "summary": get_token_summary,
+            "get": get_analysis,
+        }
+    return _ai_analyst
+
+
+# ---------------------------------------------------------------------------
 # Pipeline imports (lazy — only when /api/swing/compute is called)
 # ---------------------------------------------------------------------------
 _pipeline_b = None
@@ -300,6 +326,65 @@ async def swing_compute(sym: str = Query(..., description="Stock ticker")):
         return result
     except Exception as e:
         raise HTTPException(500, f"Compute error: {e}")
+
+
+# ---------------------------------------------------------------------------
+# AI Analyst endpoints
+# ---------------------------------------------------------------------------
+@app.post("/api/ai-analyze")
+async def ai_analyze(payload: dict):
+    """Start an AI analyst analysis. Returns job_id for polling."""
+    api = _get_ai_analyst()
+    ticker = payload.get("ticker", "").upper().strip()
+    version = payload.get("version", "full")
+    if not ticker:
+        raise HTTPException(400, "ticker is required")
+    try:
+        job_id = api["start"](ticker, version)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True, "job_id": job_id, "ticker": ticker, "version": version}
+
+
+@app.get("/api/ai-analyze/status/{job_id}")
+async def ai_analyze_status(job_id: int):
+    """Check analysis job status."""
+    api = _get_ai_analyst()
+    status = api["status"](job_id)
+    if status is None:
+        raise HTTPException(404, "Job not found")
+    return status
+
+
+@app.get("/api/ai-analyze/history")
+async def ai_analyze_history(ticker: str = None, limit: int = 50):
+    """List past analyses, optionally filtered by ticker."""
+    api = _get_ai_analyst()
+    return api["history"](ticker, limit)
+
+
+@app.get("/api/ai-analyze/tickers")
+async def ai_analyze_tickers():
+    """List all analyzed tickers with counts."""
+    api = _get_ai_analyst()
+    return api["tickers"]()
+
+
+@app.get("/api/ai-analyze/summary")
+async def ai_analyze_summary():
+    """Aggregate token usage and cost summary."""
+    api = _get_ai_analyst()
+    return api["summary"]()
+
+
+@app.get("/api/ai-analyze/{analysis_id}")
+async def ai_analyze_get(analysis_id: int):
+    """Get a specific analysis by ID."""
+    api = _get_ai_analyst()
+    result = api["get"](analysis_id)
+    if result is None:
+        raise HTTPException(404, "Analysis not found")
+    return result
 
 
 # ---------------------------------------------------------------------------

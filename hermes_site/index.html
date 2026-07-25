@@ -33,6 +33,7 @@
   .bg i:nth-child(2){width:520px;height:520px;background:#0d5b54;top:-160px;right:-100px;animation-delay:-8s}
   .bg i:nth-child(3){width:460px;height:460px;background:#22255e;bottom:-200px;left:42%;animation-delay:-15s}
   @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,30px) scale(1.08)}66%{transform:translate(-30px,20px) scale(.96)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
@@ -337,6 +338,7 @@
     <div class="nav active" data-tab="value"><span class="ic">◈</span>长投 · 高价值</div>
     <div class="nav" data-tab="smart"><span class="ic">★</span>大佬动向</div>
     <div class="nav" data-tab="swing"><span class="ic">⊿</span>做T · Swing</div>
+    <div class="nav" data-tab="analyst"><span class="ic">◎</span>AI Analyst</div>
     <div class="navlbl">报告</div>
     <div class="wkpick"><label>长投周期(每周)</label><input type="week" id="weekSelD" class="dateinp" style="width:100%"></div>
     <div class="nav gear" id="gearD" style="margin-top:8px"><span class="ic">⚙</span>设置</div>
@@ -515,6 +517,53 @@
           </div>
         </div>
       </div>
+      <!-- ============ AI ANALYST ============ -->
+      <div id="tab-analyst" style="display:none">
+        <div class="reveal">
+          <div class="eyebrow">MULTI-AGENT ANALYSIS</div>
+          <h1>AI Analyst</h1>
+          <p style="color:var(--text2);font-size:14px;margin:8px 0 0">多 agent 会诊 · 基本面 + 情绪 + 技术 + 新闻 + 多空辩论</p>
+        </div>
+
+        <!-- Input area -->
+        <div class="reveal" style="margin-top:20px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--surf)">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input id="aiTicker" placeholder="Ticker (如 NVDA)" style="width:140px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;text-transform:uppercase;letter-spacing:.04em" maxlength="6">
+            <div class="seg" id="aiVersion" style="display:flex;gap:4px">
+              <button data-v="full" class="on" style="padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surf2);color:var(--text);font:inherit;font-size:13px;cursor:pointer">完整版</button>
+              <button data-v="lite" style="padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:13px;cursor:pointer">精简版</button>
+            </div>
+            <button id="aiRunBtn" onclick="aiStart()" style="padding:10px 24px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--indigo),#52e7d6);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s">▶ 开始分析</button>
+          </div>
+          <div id="aiVersionDesc" style="margin-top:10px;font-size:12px;color:var(--muted)">完整版: 全部 agent + 多空辩论 + 风控讨论 · ~2-5 min · token 消耗高</div>
+        </div>
+
+        <!-- Status bar -->
+        <div id="aiStatus" style="display:none;margin-top:16px;padding:14px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surf);display:flex;align-items:center;gap:10px">
+          <div class="ai-spinner" style="width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--indigo);border-radius:50%;animation:spin .8s linear infinite"></div>
+          <span id="aiStatusText" style="color:var(--text2);font-size:14px">分析中...</span>
+          <span id="aiElapsed" class="mono" style="color:var(--muted);font-size:13px;margin-left:auto"></span>
+        </div>
+
+        <!-- Stats bar -->
+        <div id="aiStatsBar" style="display:none;margin-top:16px"></div>
+
+        <!-- Main result area -->
+        <div id="aiResult" style="display:none;margin-top:16px"></div>
+
+        <!-- History section -->
+        <div id="aiHistorySection" style="margin-top:28px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+            <span style="font-size:15px;font-weight:600;color:var(--text)">📋 历史分析</span>
+            <div class="sel-wrap">
+              <select id="aiFilterTicker" onchange="aiLoadHistory()">
+                <option value="">全部 Ticker</option>
+              </select>
+            </div>
+          </div>
+          <div id="aiHistoryTable"></div>
+        </div>
+      </div>
     </main>
   </div>
 </div>
@@ -523,6 +572,7 @@
   <div class="b active" data-tab="value"><span class="bi">◈</span>长投</div>
   <div class="b" data-tab="smart"><span class="bi">★</span>大佬</div>
   <div class="b" data-tab="swing"><span class="bi">⊿</span>做T</div>
+  <div class="b" data-tab="analyst"><span class="bi">◎</span>Analyst</div>
   <div class="b" id="gearB"><span class="bi">⚙</span>设置</div>
 </div>
 
@@ -1028,10 +1078,12 @@ async function init() {
 
 function setTab(v){
   document.querySelectorAll(".nav,.botnav .b").forEach(x=>x.classList.toggle("active",x.dataset.tab===v&&!x.classList.contains("soon")));
-  ["value","smart","swing"].forEach(t=>{const el=document.getElementById("tab-"+t);if(el)el.style.display=t===v?"":"none";});
+  ["value","smart","swing","analyst"].forEach(t=>{const el=document.getElementById("tab-"+t);if(el)el.style.display=t===v?"":"none";});
   // 周期下拉只属于长投(每周);大佬/做T 是按当天,各自显示自己的日期
   const showWk=(v==="value");
   document.querySelectorAll("#weekSelM, aside .wkpick").forEach(e=>e.style.display=showWk?"":"none");
+  // Init AI Analyst tab data
+  if (v === "analyst" && typeof aiInit === "function") aiInit();
 }
 document.querySelectorAll(".nav,.botnav .b").forEach(t=>t.addEventListener("click",()=>{if(t.id==="gearD"||t.id==="gearB")return;if(!t.classList.contains("soon"))setTab(t.dataset.tab);}));
 
@@ -1087,6 +1139,351 @@ document.querySelectorAll(".info").forEach(ic=>ic.addEventListener("click",e=>{
   document.querySelectorAll(".info.show").forEach(x=>x.classList.remove("show"));
   if(!open)ic.classList.add("show");}));
 document.addEventListener("click",()=>document.querySelectorAll(".info.show").forEach(x=>x.classList.remove("show")));
+
+/* ===== AI Analyst v2 ===== */
+let aiVersion = "full";
+let aiPolling = null;
+let aiStartTime = 0;
+let aiSelectedId = null;
+
+document.getElementById("aiVersion").addEventListener("click", e => {
+  const btn = e.target.closest("[data-v]");
+  if (!btn) return;
+  aiVersion = btn.dataset.v;
+  document.querySelectorAll("#aiVersion button").forEach(b => {
+    b.classList.toggle("on", b.dataset.v === aiVersion);
+    b.style.background = b.dataset.v === aiVersion ? "var(--surf2)" : "transparent";
+    b.style.color = b.dataset.v === aiVersion ? "var(--text)" : "var(--muted)";
+  });
+  document.getElementById("aiVersionDesc").textContent = aiVersion === "full"
+    ? "完整版: 全部 agent + 多空辩论 + 风控讨论 · ~2-5 min · token 消耗高"
+    : "精简版: 基本面 + 情绪 + 技术 + 新闻分析师 · ~30-90s · token 消耗低";
+});
+
+/* Enter key to start analysis */
+document.getElementById("aiTicker").addEventListener("keydown", e => {
+  if (e.key === "Enter") aiStart();
+});
+
+async function aiStart() {
+  const ticker = document.getElementById("aiTicker").value.trim().toUpperCase();
+  if (!ticker || !/^[A-Z]{1,6}$/.test(ticker)) {
+    alert("请输入有效的 ticker (1-6 个字母)");
+    return;
+  }
+
+  const btn = document.getElementById("aiRunBtn");
+  btn.disabled = true;
+  btn.style.opacity = "0.5";
+  btn.textContent = "分析中...";
+
+  const statusEl = document.getElementById("aiStatus");
+  statusEl.style.display = "flex";
+  document.getElementById("aiStatusText").textContent = "正在启动分析...";
+  document.getElementById("aiResult").style.display = "none";
+
+  aiStartTime = Date.now();
+  const elapsedEl = document.getElementById("aiElapsed");
+  const tickInterval = setInterval(() => {
+    const s = Math.floor((Date.now() - aiStartTime) / 1000);
+    elapsedEl.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  }, 1000);
+
+  try {
+    const res = await fetch("/api/ai-analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticker, version: aiVersion }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Failed to start");
+
+    document.getElementById("aiStatusText").textContent = `分析中 — ${ticker} ${aiVersion === "full" ? "完整版" : "精简版"}...`;
+    aiPollStatus(data.job_id, tickInterval);
+  } catch (e) {
+    clearInterval(tickInterval);
+    document.getElementById("aiStatusText").textContent = "❌ 错误: " + e.message;
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.textContent = "▶ 开始分析";
+  }
+}
+
+async function aiPollStatus(jobId, tickInterval) {
+  try {
+    const res = await fetch("/api/ai-analyze/status/" + jobId);
+    const data = await res.json();
+
+    if (data.status === "running") {
+      document.getElementById("aiStatusText").textContent = "分析中 — agent 会诊进行中...";
+      aiPolling = setTimeout(() => aiPollStatus(jobId, tickInterval), 3000);
+      return;
+    }
+
+    clearInterval(tickInterval);
+    clearTimeout(aiPolling);
+
+    const btn = document.getElementById("aiRunBtn");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.textContent = "▶ 开始分析";
+
+    if (data.status === "error") {
+      document.getElementById("aiStatusText").textContent = "❌ 分析失败: " + (data.error || data.error_msg || "unknown");
+      return;
+    }
+
+    const dur = data.duration || data.result?.duration_s || "?";
+    document.getElementById("aiStatusText").textContent = `✅ 完成 · ${dur}s`;
+    document.getElementById("aiElapsed").textContent = dur + "s";
+
+    aiShowResult(data.result || data);
+    aiLoadStats();
+    aiLoadTickers();
+    aiLoadHistory();
+  } catch (e) {
+    clearInterval(tickInterval);
+    document.getElementById("aiStatusText").textContent = "❌ 轮询失败: " + e.message;
+  }
+}
+
+/* ---------- Result rendering ---------- */
+function aiShowResult(r) {
+  const el = document.getElementById("aiResult");
+  el.style.display = "";
+
+  const signal = (r.signal || "").toLowerCase();
+  const isBuy = signal.includes("buy") || signal.includes("overweight");
+  const isSell = signal.includes("sell") || signal.includes("underweight");
+  const signalColor = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
+  const signalIcon = isBuy ? "🟢" : isSell ? "🔴" : "🟡";
+
+  let metrics = {};
+  try { metrics = typeof r.key_metrics === "string" ? JSON.parse(r.key_metrics) : (r.key_metrics || {}); } catch {}
+
+  let bullPts = [], bearPts = [];
+  try { bullPts = typeof r.bull_points === "string" ? JSON.parse(r.bull_points) : (r.bull_points || []); } catch {}
+  try { bearPts = typeof r.bear_points === "string" ? JSON.parse(r.bull_points) : (r.bear_points || []); } catch {}
+
+  let tokenInfo = {};
+  try { tokenInfo = typeof r.token_usage === "string" ? JSON.parse(r.token_usage) : (r.token_usage || {}); } catch {}
+
+  const mkMetric = (k, v) => v ? `<div class="metric"><div class="v">${aiEsc(v)}</div><div class="k">${aiEsc(k)}</div></div>` : "";
+
+  el.innerHTML = `
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--surf);overflow:hidden">
+
+      <!-- Decision card -->
+      <div style="padding:24px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <span style="font-size:40px;line-height:1">${signalIcon}</span>
+          <div>
+            <div style="font-size:24px;font-weight:600;color:${signalColor};letter-spacing:-.02em">${aiEsc(r.signal || "N/A")}</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px">${aiEsc(r.ticker || "")} · ${aiEsc(r.trade_date || "")} · ${r.version === "lite" ? "精简版" : "完整版"}</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div class="mono" style="font-size:20px;font-weight:600;color:var(--text)">${r.duration_s ? r.duration_s + "s" : ""}</div>
+            ${tokenInfo.total ? '<div class="mono" style="font-size:12px;color:var(--muted)">~' + (tokenInfo.total / 1000).toFixed(1) + "K tokens</div>" : ""}
+          </div>
+        </div>
+        ${r.decision ? '<div style="margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text2);line-height:1.7;white-space:pre-wrap">' + aiEsc(typeof r.decision === "string" ? r.decision : JSON.stringify(r.decision)) + "</div>" : ""}
+      </div>
+
+      <!-- Key metrics row -->
+      ${Object.keys(metrics).filter(k => k !== "signal").length ? `
+      <div style="padding:16px 24px;border-bottom:1px solid var(--line)">
+        <div class="strip" style="gap:8px">
+          ${mkMetric("价格", metrics.price)}
+          ${mkMetric("PE", metrics.pe)}
+          ${mkMetric("EPS", metrics.eps)}
+          ${mkMetric("营收", metrics.revenue)}
+          ${mkMetric("市值", metrics.market_cap)}
+          ${mkMetric("目标价", metrics.target_price)}
+        </div>
+      </div>` : ""}
+
+      <!-- Bull vs Bear -->
+      ${bullPts.length || bearPts.length ? `
+      <div style="padding:20px 24px;border-bottom:1px solid var(--line)">
+        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px">⚖️ 多空对比</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="padding:14px;border:1px solid var(--green-d);border-radius:10px;background:var(--bg)">
+            <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:8px">🟢 多头论点</div>
+            ${bullPts.length ? bullPts.map(p => '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:var(--green)">•</span>' + aiEsc(p) + "</div>").join("") : '<div style="font-size:12px;color:var(--muted)">无多头数据</div>'}
+          </div>
+          <div style="padding:14px;border:1px solid var(--red-d);border-radius:10px;background:var(--bg)">
+            <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px">🔴 空头论点</div>
+            ${bearPts.length ? bearPts.map(p => '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:var(--red)">•</span>' + aiEsc(p) + "</div>").join("") : '<div style="font-size:12px;color:var(--muted)">无空头数据（精简版不含空头分析师）</div>'}
+          </div>
+        </div>
+      </div>` : ""}
+
+      <!-- Analyst snapshots -->
+      ${aiRenderAnalystCards(r)}
+
+      <!-- Token usage -->
+      ${tokenInfo.total ? `
+      <div style="padding:14px 24px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-family:var(--mono)">
+        <span>输入 ~${(tokenInfo.input_tokens / 1000).toFixed(1)}K</span>
+        <span>输出 ~${(tokenInfo.output_tokens / 1000).toFixed(1)}K</span>
+        <span>总计 ~${(tokenInfo.total / 1000).toFixed(1)}K tokens</span>
+        <span style="color:var(--faint)">*估算值</span>
+      </div>` : ""}
+    </div>
+  `;
+
+  /* Attach toggle handlers for collapsible sections */
+  el.querySelectorAll("[data-ai-toggle]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.nextElementSibling;
+      if (!target) return;
+      const open = target.style.display !== "none";
+      target.style.display = open ? "none" : "";
+      btn.querySelector(".ai-arrow").style.transform = open ? "" : "rotate(90deg)";
+    });
+  });
+}
+
+function aiRenderAnalystCards(r) {
+  const sections = [
+    { icon: "📊", title: "基本面分析", content: r.fundamentals_report },
+    { icon: "📈", title: "市场技术分析", content: r.market_report },
+    { icon: "💬", title: "情绪分析", content: r.sentiment_report },
+    { icon: "📰", title: "新闻分析", content: r.news_report },
+    { icon: "⚖️", title: "投资计划", content: r.investment_plan },
+    { icon: "🗣️", title: "多空辩论 & 风控", content: r.debate_summary },
+  ].filter(s => s.content);
+
+  if (!sections.length) return "";
+
+  return `
+    <div style="padding:20px 24px;border-bottom:1px solid var(--line)">
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px">📋 分析师报告</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${sections.map((s, i) => `
+          <div style="border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden">
+            <div data-ai-toggle style="display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text);user-select:none" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none';this.querySelector('.ai-arrow').style.transform=this.nextElementSibling.style.display==='none'?'':'rotate(90deg)'">
+              <span class="ai-arrow" style="font-size:11px;transition:transform .2s;color:var(--muted)">▸</span>
+              <span>${s.icon}</span>
+              <span>${s.title}</span>
+              <span style="margin-left:auto;font-size:12px;color:var(--faint)">${(typeof s.content === "string" ? s.content : "").length.toLocaleString()} chars</span>
+            </div>
+            <div style="display:none;padding:14px;border-top:1px solid var(--line);font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:500px;overflow-y:auto">${aiEsc(typeof s.content === "string" ? s.content : JSON.stringify(s.content))}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function aiEsc(s) {
+  const d = document.createElement("div");
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+
+/* ---------- Stats bar ---------- */
+async function aiLoadStats() {
+  try {
+    const res = await fetch("/api/ai-analyze/summary");
+    const s = await res.json();
+    if (!s.total_analyses) return;
+
+    const el = document.getElementById("aiStatsBar");
+    el.style.display = "";
+    el.innerHTML = `<div class="strip" style="gap:8px">
+      <div class="metric"><div class="v">${s.total_analyses}</div><div class="k">总分析数</div></div>
+      <div class="metric"><div class="v">${s.full_count || 0}/${s.lite_count || 0}</div><div class="k">完整/精简</div></div>
+      <div class="metric"><div class="v">${s.total_tokens > 0 ? "~" + (s.total_tokens / 1000).toFixed(0) + "K" : "-"}</div><div class="k">总 Tokens</div></div>
+      <div class="metric"><div class="v">${s.avg_duration || "-"}s</div><div class="k">平均耗时</div></div>
+    </div>`;
+  } catch {}
+}
+
+/* ---------- Ticker filter ---------- */
+async function aiLoadTickers() {
+  try {
+    const res = await fetch("/api/ai-analyze/tickers");
+    const tickers = await res.json();
+    const sel = document.getElementById("aiFilterTicker");
+    const current = sel.value;
+    sel.innerHTML = '<option value="">全部 Ticker</option>';
+    tickers.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.ticker;
+      opt.textContent = `${t.ticker} (${t.total})`;
+      sel.appendChild(opt);
+    });
+    sel.value = current;
+  } catch {}
+}
+
+/* ---------- History table ---------- */
+async function aiLoadHistory() {
+  const ticker = document.getElementById("aiFilterTicker").value;
+  try {
+    const url = ticker ? `/api/ai-analyze/history?ticker=${ticker}` : "/api/ai-analyze/history?limit=20";
+    const res = await fetch(url);
+    const rows = await res.json();
+
+    const el = document.getElementById("aiHistoryTable");
+    if (!rows.length) {
+      el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">暂无分析记录</div>';
+      return;
+    }
+
+    el.innerHTML = `
+      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:12px">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="border-bottom:1px solid var(--line);background:var(--surf)">
+              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">Ticker</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">日期</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">版本</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">信号</th>
+              <th style="padding:10px 14px;text-align:right;font-weight:500;color:var(--muted)">耗时</th>
+              <th style="padding:10px 14px;text-align:right;font-weight:500;color:var(--muted)">Tokens</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => {
+              const sig = (r.signal || "").toLowerCase();
+              const isBuy = sig.includes("buy") || sig.includes("overweight");
+              const isSell = sig.includes("sell") || sig.includes("underweight");
+              const sigColor = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
+              let tu = {};
+              try { tu = typeof r.token_usage === "string" ? JSON.parse(r.token_usage) : (r.token_usage || {}); } catch {}
+              return `<tr style="border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background=''" onclick="aiSelectHistory(${r.id})">
+                <td style="padding:10px 14px;font-weight:600;color:var(--text)">${aiEsc(r.ticker)}</td>
+                <td style="padding:10px 14px;color:var(--text2)">${aiEsc(r.trade_date || "")}</td>
+                <td style="padding:10px 14px"><span style="padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500;${r.version === "full" ? "background:var(--indigo-d);color:var(--indigo)" : "background:var(--surf2);color:var(--text2)"}">${r.version === "full" ? "完整" : "精简"}</span></td>
+                <td style="padding:10px 14px;color:${sigColor};font-weight:500">${aiEsc(r.signal || "-")}</td>
+                <td style="padding:10px 14px;text-align:right;font-family:var(--mono);color:var(--text2)">${r.duration_s ? r.duration_s + "s" : "-"}</td>
+                <td style="padding:10px 14px;text-align:right;font-family:var(--mono);color:var(--muted)">${tu.total ? "~" + (tu.total / 1000).toFixed(1) + "K" : "-"}</td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch {}
+}
+
+async function aiSelectHistory(id) {
+  try {
+    const res = await fetch("/api/ai-analyze/" + id);
+    const data = await res.json();
+    aiShowResult(data);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch {}
+}
+
+/* Init on tab show */
+function aiInit() {
+  aiLoadStats();
+  aiLoadTickers();
+  aiLoadHistory();
+}
 
 init();
 </script>
