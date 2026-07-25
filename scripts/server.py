@@ -5,7 +5,9 @@ Falls back to config.json if Redis is unavailable.
 """
 import json
 import os
+import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import uvicorn
@@ -393,6 +395,53 @@ async def ai_analyze_get(analysis_id: int):
     if result is None:
         raise HTTPException(404, "Analysis not found")
     return result
+
+
+# ---------------------------------------------------------------------------
+# Holdings CRUD
+# ---------------------------------------------------------------------------
+_HOLDINGS_PATH = (Path(__file__).resolve().parent.parent / "data" / "holdings.json")
+
+def _load_holdings() -> list:
+    if _HOLDINGS_PATH.exists():
+        try:
+            return json.loads(_HOLDINGS_PATH.read_text()).get("holdings", [])
+        except (json.JSONDecodeError, KeyError):
+            pass
+    return []
+
+def _save_holdings(holdings: list):
+    _HOLDINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _HOLDINGS_PATH.write_text(json.dumps({
+        "holdings": holdings,
+        "updated": datetime.now().isoformat()[:10],
+    }, indent=2, ensure_ascii=False))
+
+@app.get("/api/holdings")
+async def holdings_list():
+    return _load_holdings()
+
+@app.post("/api/holdings")
+async def holdings_add(data: dict):
+    ticker = (data.get("ticker") or "").upper().strip()
+    if not ticker or not re.match(r"^[A-Z]{1,6}$", ticker):
+        raise HTTPException(400, "Invalid ticker (1-6 uppercase letters)")
+    holdings = _load_holdings()
+    if any(h["ticker"] == ticker for h in holdings):
+        raise HTTPException(409, f"{ticker} already in holdings")
+    holdings.append({"ticker": ticker})
+    _save_holdings(holdings)
+    return {"ok": True, "ticker": ticker, "holdings": holdings}
+
+@app.delete("/api/holdings/{ticker}")
+async def holdings_remove(ticker: str):
+    ticker = ticker.upper().strip()
+    holdings = _load_holdings()
+    new = [h for h in holdings if h["ticker"] != ticker]
+    if len(new) == len(holdings):
+        raise HTTPException(404, f"{ticker} not in holdings")
+    _save_holdings(new)
+    return {"ok": True, "ticker": ticker, "holdings": new}
 
 
 # ---------------------------------------------------------------------------

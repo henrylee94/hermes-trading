@@ -578,9 +578,21 @@
               </div>
             </div>
 
-            <!-- Watchlist section -->
+            <!-- Holdings section -->
             <div>
-              <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:0 4px">📊 持仓 Holdings</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:0 4px">
+                <span style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">📊 持仓</span>
+                <div style="flex:1"></div>
+                <button onclick="aiShowAddForm()" style="border:none;background:none;color:var(--indigo);cursor:pointer;font-size:16px;padding:0 4px;line-height:1;opacity:.7;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.7'" title="添加 ticker">+</button>
+              </div>
+              <!-- Add form (hidden by default) -->
+              <div id="aiAddForm" style="display:none;margin-bottom:6px;padding:0 4px">
+                <div style="display:flex;gap:4px">
+                  <input id="aiAddInput" type="text" maxlength="6" placeholder="ticker" style="flex:1;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;font-family:var(--mono)" onkeydown="if(event.key==='Enter')aiAddTicker();if(event.key==='Escape')aiHideAddForm()">
+                  <button onclick="aiAddTicker()" style="border:none;border-radius:6px;padding:6px 10px;background:var(--indigo);color:#fff;font-size:11px;font-weight:600;cursor:pointer">添加</button>
+                  <button onclick="aiHideAddForm()" style="border:none;border-radius:6px;padding:6px 8px;background:var(--surf2);color:var(--muted);font-size:11px;cursor:pointer">取消</button>
+                </div>
+              </div>
               <div id="aiWatchlist" style="display:flex;flex-direction:column;gap:4px"></div>
             </div>
 
@@ -602,8 +614,8 @@
             <!-- Empty state -->
             <div id="aiEmpty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;text-align:center;padding:40px">
               <div style="font-size:48px;margin-bottom:16px;opacity:.3">◎</div>
-              <div style="font-size:16px;font-weight:500;color:var(--text2);margin-bottom:8px">选择一个分析查看详情</div>
-              <div style="font-size:13px;color:var(--muted);max-width:320px">从左侧持仓列表点击 ticker 查看最新分析，或点击「未分析」的 ticker 启动分析</div>
+              <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">选择一个持仓查看详情</div>
+              <div style="font-size:13px;color:var(--muted)">点击左栏 ticker 查看分析结果，或选中待分析 ticker 后启动分析</div>
             </div>
             <!-- Analysis result (hidden by default) -->
             <div id="aiResult" style="display:none"></div>
@@ -1194,6 +1206,8 @@ let aiSelectedId = null;
 let aiCoverageData = null;  // cached coverage response
 
 /* --- Version toggle --- */
+let aiSelectedTicker = null;  // currently selected uncovered ticker
+
 document.getElementById("aiVersion").addEventListener("click", e => {
   const btn = e.target.closest("[data-v]");
   if (!btn) return;
@@ -1207,6 +1221,18 @@ document.getElementById("aiVersion").addEventListener("click", e => {
     ? "完整版: 全部 agent + 多空辩论 + 风控 · ~2-5 min"
     : "精简版: 基本面 + 情绪 + 技术 + 新闻 · ~30-90s";
 });
+
+/* --- Signal translation --- */
+function aiSignalZh(sig) {
+  if (!sig) return "-";
+  const s = sig.toLowerCase();
+  if (s.includes("buy")) return "买入";
+  if (s.includes("overweight")) return "超配";
+  if (s.includes("hold")) return "持有";
+  if (s.includes("underweight")) return "减配";
+  if (s.includes("sell")) return "卖出";
+  return sig;
+}
 
 /* --- Enter key --- */
 document.getElementById("aiTicker").addEventListener("keydown", e => {
@@ -1258,17 +1284,21 @@ function aiRenderWatchlist() {
         const isSell = sig.includes("sell") || sig.includes("underweight");
         const color = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
         const icon = isBuy ? "🟢" : isSell ? "🔴" : "🟡";
-        return `<div onclick="aiSelectLatest('${t}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surf);cursor:pointer;transition:background .15s;font-size:13px" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='var(--surf)'">
+        const active = aiSelectedId && info.id === aiSelectedId ? "border-color:var(--indigo);background:var(--surf2)" : "";
+        return `<div onclick="aiSelectLatest('${t}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surf);cursor:pointer;transition:background .15s;font-size:13px;${active}" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='${active ? 'var(--surf2)' : 'var(--surf)'}'">
           <span>${icon}</span>
           <span style="font-weight:600;color:var(--text)">${t}</span>
-          <span style="color:${color};font-size:12px;margin-left:auto">${info.signal || "-"}</span>
+          <span style="color:${color};font-size:12px;margin-left:auto">${aiSignalZh(info.signal)}</span>
           <span style="color:var(--faint);font-size:11px">${info.version === "full" ? "F" : "L"}</span>
+          <button onclick="event.stopPropagation();aiRemoveTicker('${t}')" style="border:none;background:none;color:var(--faint);cursor:pointer;font-size:14px;padding:0 2px;line-height:1;opacity:.4;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.4'" title="移除">×</button>
         </div>`;
       } else {
-        return `<div onclick="aiQuickAnalyze('${t}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;background:transparent;cursor:pointer;transition:background .15s;font-size:13px" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='transparent'">
+        const selected = aiSelectedTicker === t;
+        return `<div onclick="aiSelectTicker('${t}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed ${selected ? 'var(--indigo)' : 'var(--line)'};border-radius:8px;background:${selected ? 'var(--indigo-d)' : 'transparent'};cursor:pointer;transition:all .15s;font-size:13px" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='${selected ? 'var(--indigo-d)' : 'transparent'}'">
           <span style="opacity:.3">○</span>
-          <span style="color:var(--muted)">${t}</span>
-          <span style="color:var(--faint);font-size:11px;margin-left:auto">点击分析</span>
+          <span style="color:${selected ? 'var(--text)' : 'var(--muted)'}">${t}</span>
+          <span style="color:var(--faint);font-size:11px;margin-left:auto">待分析</span>
+          <button onclick="event.stopPropagation();aiRemoveTicker('${t}')" style="border:none;background:none;color:var(--faint);cursor:pointer;font-size:14px;padding:0 2px;line-height:1;opacity:.4;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.4'" title="移除">×</button>
         </div>`;
       }
     });
@@ -1298,7 +1328,7 @@ async function aiLoadRecent() {
       return `<div onclick="aiSelectAnalysis(${r.id})" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surf);cursor:pointer;transition:background .15s;font-size:12px;${active}" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='${active ? 'var(--surf2)' : 'var(--surf)'}'">
         <span style="font-size:10px">${icon}</span>
         <span style="font-weight:600;color:var(--text)">${r.ticker}</span>
-        <span style="color:var(--faint)">${r.version === "full" ? "F" : "L"}</span>
+        <span style="color:var(--muted);margin-left:auto">${aiSignalZh(r.signal)}</span>
         <span style="color:var(--muted);margin-left:auto;font-family:var(--mono)">${r.duration_s ? r.duration_s + "s" : ""}</span>
       </div>`;
     }).join("");
@@ -1328,11 +1358,69 @@ function aiFilterTrack(q) {
   aiRenderWatchlist();
 }
 
-/* ========== TRACK LIST: Quick analyze from watchlist ========== */
-function aiQuickAnalyze(ticker) {
-  document.getElementById("aiTicker").value = ticker;
+/* ========== TRACK LIST: Select uncovered ticker (no auto-run) ========== */
+function aiSelectTicker(ticker) {
+  aiSelectedTicker = aiSelectedTicker === ticker ? null : ticker;
+  aiRenderWatchlist();
+  // Show analyze button in detail panel
+  const detailEmpty = document.getElementById("aiEmpty");
+  if (aiSelectedTicker && detailEmpty.style.display !== "none") {
+    document.getElementById("aiEmpty").innerHTML = `
+      <div style="font-size:48px;margin-bottom:16px;opacity:.3">○</div>
+      <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px">${aiSelectedTicker}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">已选中 · 点击下方按钮启动分析</div>
+      <button onclick="aiStartSelected()" style="padding:10px 24px;border:none;border-radius:10px;background:var(--green);color:#fff;font-size:14px;font-weight:600;cursor:pointer">▶ 分析 ${aiSelectedTicker}</button>
+    `;
+  }
+}
+
+async function aiStartSelected() {
+  if (!aiSelectedTicker) return;
+  document.getElementById("aiTicker").value = aiSelectedTicker;
   aiShowNewForm();
   aiStart();
+}
+
+/* ========== TRACK LIST: Remove ticker ========== */
+async function aiRemoveTicker(ticker) {
+  if (!confirm(`从持仓中移除 ${ticker}？`)) return;
+  try {
+    await fetch(`/api/holdings/${ticker}`, { method: "DELETE" });
+    aiLoadCoverage();
+  } catch {}
+}
+
+/* ========== TRACK LIST: Add ticker ========== */
+function aiShowAddForm() {
+  document.getElementById("aiAddForm").style.display = "";
+  document.getElementById("aiAddInput").focus();
+}
+function aiHideAddForm() {
+  document.getElementById("aiAddForm").style.display = "none";
+  document.getElementById("aiAddInput").value = "";
+}
+async function aiAddTicker() {
+  const input = document.getElementById("aiAddInput");
+  const ticker = input.value.trim().toUpperCase();
+  if (!ticker || !/^[A-Z]{1,6}$/.test(ticker)) {
+    alert("请输入有效的 ticker (1-6 个字母)");
+    return;
+  }
+  try {
+    const res = await fetch("/api/holdings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticker }),
+    });
+    if (!res.ok) {
+      const d = await res.json();
+      alert(d.detail || "添加失败");
+      return;
+    }
+    input.value = "";
+    aiHideAddForm();
+    aiLoadCoverage();
+  } catch {}
 }
 
 /* ========== TRACK LIST: Select latest analysis for ticker ========== */
@@ -1390,7 +1478,7 @@ function aiShowResult(r) {
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
           <span style="font-size:36px;line-height:1">${signalIcon}</span>
           <div>
-            <div style="font-size:22px;font-weight:600;color:${signalColor};letter-spacing:-.02em">${aiEsc(r.signal || "N/A")}</div>
+            <div style="font-size:22px;font-weight:600;color:${signalColor};letter-spacing:-.02em">${aiSignalZh(r.signal) || "N/A"}</div>
             <div style="font-size:13px;color:var(--muted);margin-top:2px">${aiEsc(r.ticker || "")} · ${aiEsc(r.trade_date || "")} · ${r.version === "lite" ? "精简版" : "完整版"}</div>
           </div>
           <div style="margin-left:auto;text-align:right">

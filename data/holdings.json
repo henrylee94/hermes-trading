@@ -1,9 +1,25 @@
 {
   "holdings": [
-    {"ticker": "INTC", "shares": 200, "cost_basis": 130.00},
-    {"ticker": "PLTR", "shares": 100, "cost_basis": 141.00},
-    {"ticker": "SOFI", "shares": 250, "cost_basis": 23.20},
-    {"ticker": "BMNR", "shares": 100, "cost_basis": 50.00}
+    {
+      "ticker": "INTC",
+      "shares": 200,
+      "cost_basis": 130.0
+    },
+    {
+      "ticker": "PLTR",
+      "shares": 100,
+      "cost_basis": 141.0
+    },
+    {
+      "ticker": "SOFI",
+      "shares": 250,
+      "cost_basis": 23.2
+    },
+    {
+      "ticker": "BMNR",
+      "shares": 100,
+      "cost_basis": 50.0
+    }
   ],
   "updated": "2026-07-26"
 }
