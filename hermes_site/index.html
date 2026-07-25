@@ -318,6 +318,13 @@
   }
   .desktop-only{display:none}
   @media(min-width:860px){.desktop-only{display:block}.mobile-only{display:none}}
+
+  /* AI Analyst dual-column responsive */
+  @media(max-width:859px){
+    .ai-dual{grid-template-columns:1fr !important;min-height:auto !important}
+    .ai-track{order:2}.ai-detail{order:1}
+    .ai-detail{min-height:200px}
+  }
 </style>
 </head>
 <body>
@@ -519,14 +526,20 @@
       </div>
       <!-- ============ AI ANALYST ============ -->
       <div id="tab-analyst" style="display:none">
-        <div class="reveal">
-          <div class="eyebrow">MULTI-AGENT ANALYSIS</div>
-          <h1>AI Analyst</h1>
-          <p style="color:var(--text2);font-size:14px;margin:8px 0 0">多 agent 会诊 · 基本面 + 情绪 + 技术 + 新闻 + 多空辩论</p>
+        <!-- Header -->
+        <div class="reveal" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div>
+            <div class="eyebrow">MULTI-AGENT ANALYSIS</div>
+            <h1 style="margin:4px 0 0">AI Analyst</h1>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button onclick="aiShowNewForm()" style="padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surf);color:var(--text);font:inherit;font-size:13px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='var(--surf)'">+ 新分析</button>
+            <button onclick="aiScanAll()" id="aiScanBtn" style="padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surf);color:var(--text);font:inherit;font-size:13px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='var(--surf)'">⚡ 全量扫描</button>
+          </div>
         </div>
 
-        <!-- Input area -->
-        <div class="reveal" style="margin-top:20px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--surf)">
+        <!-- Inline new analysis form (hidden by default) -->
+        <div id="aiNewForm" class="reveal" style="display:none;margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surf)">
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <input id="aiTicker" placeholder="Ticker (如 NVDA)" style="width:140px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;text-transform:uppercase;letter-spacing:.04em" maxlength="6">
             <div class="seg" id="aiVersion" style="display:flex;gap:4px">
@@ -534,34 +547,67 @@
               <button data-v="lite" style="padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:13px;cursor:pointer">精简版</button>
             </div>
             <button id="aiRunBtn" onclick="aiStart()" style="padding:10px 24px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--indigo),#52e7d6);color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s">▶ 开始分析</button>
+            <button onclick="aiHideNewForm()" style="padding:8px 12px;border:none;border-radius:8px;background:transparent;color:var(--muted);font:inherit;font-size:13px;cursor:pointer">取消</button>
           </div>
-          <div id="aiVersionDesc" style="margin-top:10px;font-size:12px;color:var(--muted)">完整版: 全部 agent + 多空辩论 + 风控讨论 · ~2-5 min · token 消耗高</div>
+          <div id="aiVersionDesc" style="margin-top:8px;font-size:12px;color:var(--muted)">完整版: 全部 agent + 多空辩论 + 风控 · ~2-5 min</div>
         </div>
 
-        <!-- Status bar -->
-        <div id="aiStatus" style="display:none;margin-top:16px;padding:14px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surf);display:flex;align-items:center;gap:10px">
-          <div class="ai-spinner" style="width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--indigo);border-radius:50%;animation:spin .8s linear infinite"></div>
-          <span id="aiStatusText" style="color:var(--text2);font-size:14px">分析中...</span>
-          <span id="aiElapsed" class="mono" style="color:var(--muted);font-size:13px;margin-left:auto"></span>
+        <!-- Status bar (shown during analysis) -->
+        <div id="aiStatus" style="display:none;margin-top:12px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surf);align-items:center;gap:10px">
+          <div style="width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--indigo);border-radius:50%;animation:spin .8s linear infinite"></div>
+          <span id="aiStatusText" style="color:var(--text2);font-size:13px">分析中...</span>
+          <span id="aiElapsed" class="mono" style="color:var(--muted);font-size:12px;margin-left:auto"></span>
         </div>
 
-        <!-- Stats bar -->
-        <div id="aiStatsBar" style="display:none;margin-top:16px"></div>
+        <!-- Dual-column layout -->
+        <div class="ai-dual" style="display:grid;grid-template-columns:280px 1fr;gap:16px;margin-top:16px;min-height:calc(100vh - 200px)">
 
-        <!-- Main result area -->
-        <div id="aiResult" style="display:none;margin-top:16px"></div>
+          <!-- LEFT: Track List -->
+          <div class="ai-track" style="display:flex;flex-direction:column;gap:12px">
+            <!-- Search -->
+            <input id="aiSearch" placeholder="搜索 ticker..." oninput="aiFilterTrack(this.value)" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:13px;box-sizing:border-box">
 
-        <!-- History section -->
-        <div id="aiHistorySection" style="margin-top:28px">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
-            <span style="font-size:15px;font-weight:600;color:var(--text)">📋 历史分析</span>
-            <div class="sel-wrap">
-              <select id="aiFilterTicker" onchange="aiLoadHistory()">
-                <option value="">全部 Ticker</option>
-              </select>
+            <!-- Coverage bar -->
+            <div id="aiCoverageBar" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surf)">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+                <span>持仓覆盖</span>
+                <span id="aiCoverageText">-/-</span>
+              </div>
+              <div style="height:4px;border-radius:2px;background:var(--line);overflow:hidden">
+                <div id="aiCoverageFill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),#52e7d6);border-radius:2px;transition:width .4s"></div>
+              </div>
+            </div>
+
+            <!-- Watchlist section -->
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:0 4px">📊 持仓 Watch</div>
+              <div id="aiWatchlist" style="display:flex;flex-direction:column;gap:4px"></div>
+            </div>
+
+            <!-- Recent analyses -->
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:0 4px">🕐 最近分析</div>
+              <div id="aiRecent" style="display:flex;flex-direction:column;gap:4px"></div>
+            </div>
+
+            <!-- Stats -->
+            <div id="aiStats" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surf);font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px">
+              <div style="font-weight:600;color:var(--text2);margin-bottom:2px">📈 统计</div>
+              <div id="aiStatsContent">加载中...</div>
             </div>
           </div>
-          <div id="aiHistoryTable"></div>
+
+          <!-- RIGHT: Detail Panel -->
+          <div class="ai-detail" style="min-height:300px">
+            <!-- Empty state -->
+            <div id="aiEmpty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;text-align:center;padding:40px">
+              <div style="font-size:48px;margin-bottom:16px;opacity:.3">◎</div>
+              <div style="font-size:16px;font-weight:500;color:var(--text2);margin-bottom:8px">选择一个分析查看详情</div>
+              <div style="font-size:13px;color:var(--muted);max-width:320px">从左侧持仓列表点击 ticker 查看最新分析，或点击「未分析」的 ticker 启动分析</div>
+            </div>
+            <!-- Analysis result (hidden by default) -->
+            <div id="aiResult" style="display:none"></div>
+          </div>
         </div>
       </div>
     </main>
@@ -1140,12 +1186,14 @@ document.querySelectorAll(".info").forEach(ic=>ic.addEventListener("click",e=>{
   if(!open)ic.classList.add("show");}));
 document.addEventListener("click",()=>document.querySelectorAll(".info.show").forEach(x=>x.classList.remove("show")));
 
-/* ===== AI Analyst v2 ===== */
+/* ===== AI Analyst v3 — Application ===== */
 let aiVersion = "full";
 let aiPolling = null;
 let aiStartTime = 0;
 let aiSelectedId = null;
+let aiCoverageData = null;  // cached coverage response
 
+/* --- Version toggle --- */
 document.getElementById("aiVersion").addEventListener("click", e => {
   const btn = e.target.closest("[data-v]");
   if (!btn) return;
@@ -1156,15 +1204,286 @@ document.getElementById("aiVersion").addEventListener("click", e => {
     b.style.color = b.dataset.v === aiVersion ? "var(--text)" : "var(--muted)";
   });
   document.getElementById("aiVersionDesc").textContent = aiVersion === "full"
-    ? "完整版: 全部 agent + 多空辩论 + 风控讨论 · ~2-5 min · token 消耗高"
-    : "精简版: 基本面 + 情绪 + 技术 + 新闻分析师 · ~30-90s · token 消耗低";
+    ? "完整版: 全部 agent + 多空辩论 + 风控 · ~2-5 min"
+    : "精简版: 基本面 + 情绪 + 技术 + 新闻 · ~30-90s";
 });
 
-/* Enter key to start analysis */
+/* --- Enter key --- */
 document.getElementById("aiTicker").addEventListener("keydown", e => {
   if (e.key === "Enter") aiStart();
 });
 
+/* --- New form toggle --- */
+function aiShowNewForm() {
+  document.getElementById("aiNewForm").style.display = "";
+  document.getElementById("aiTicker").focus();
+}
+function aiHideNewForm() {
+  document.getElementById("aiNewForm").style.display = "none";
+}
+
+/* ========== TRACK LIST: Coverage + Watchlist ========== */
+async function aiLoadCoverage() {
+  try {
+    const res = await fetch("/api/ai-analyze/coverage");
+    aiCoverageData = await res.json();
+    aiRenderWatchlist();
+    aiRenderCoverageBar();
+  } catch {}
+}
+
+function aiRenderCoverageBar() {
+  const c = aiCoverageData;
+  if (!c) return;
+  const total = c.watchlist.length;
+  const covered = c.covered.length;
+  const pct = total > 0 ? Math.round(covered / total * 100) : 0;
+  document.getElementById("aiCoverageText").textContent = `${covered}/${total}`;
+  document.getElementById("aiCoverageFill").style.width = pct + "%";
+}
+
+function aiRenderWatchlist() {
+  const c = aiCoverageData;
+  if (!c) return;
+  const el = document.getElementById("aiWatchlist");
+  const search = (document.getElementById("aiSearch").value || "").toUpperCase();
+
+  const items = c.watchlist
+    .filter(t => !search || t.includes(search))
+    .map(t => {
+      const info = c.latest[t];
+      if (info) {
+        const sig = (info.signal || "").toLowerCase();
+        const isBuy = sig.includes("buy") || sig.includes("overweight");
+        const isSell = sig.includes("sell") || sig.includes("underweight");
+        const color = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
+        const icon = isBuy ? "🟢" : isSell ? "🔴" : "🟡";
+        return `<div onclick="aiSelectLatest('${t}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surf);cursor:pointer;transition:background .15s;font-size:13px" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='var(--surf)'">
+          <span>${icon}</span>
+          <span style="font-weight:600;color:var(--text)">${t}</span>
+          <span style="color:${color};font-size:12px;margin-left:auto">${info.signal || "-"}</span>
+          <span style="color:var(--faint);font-size:11px">${info.version === "full" ? "F" : "L"}</span>
+        </div>`;
+      } else {
+        return `<div onclick="aiQuickAnalyze('${t}')" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;background:transparent;cursor:pointer;transition:background .15s;font-size:13px" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='transparent'">
+          <span style="opacity:.3">○</span>
+          <span style="color:var(--muted)">${t}</span>
+          <span style="color:var(--faint);font-size:11px;margin-left:auto">点击分析</span>
+        </div>`;
+      }
+    });
+
+  el.innerHTML = items.join("") || '<div style="font-size:12px;color:var(--faint);padding:8px">无匹配 ticker</div>';
+}
+
+/* ========== TRACK LIST: Recent Analyses ========== */
+async function aiLoadRecent() {
+  try {
+    const res = await fetch("/api/ai-analyze/history?limit=10");
+    const rows = await res.json();
+    const el = document.getElementById("aiRecent");
+    if (!rows.length) {
+      el.innerHTML = '<div style="font-size:12px;color:var(--faint);padding:8px">暂无分析记录</div>';
+      return;
+    }
+    el.innerHTML = rows.map(r => {
+      const sig = (r.signal || "").toLowerCase();
+      const isBuy = sig.includes("buy") || sig.includes("overweight");
+      const isSell = sig.includes("sell") || sig.includes("underweight");
+      const color = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
+      const icon = isBuy ? "🟢" : isSell ? "🔴" : "🟡";
+      const active = r.id === aiSelectedId ? "border-color:var(--indigo);background:var(--surf2)" : "";
+      let tu = {};
+      try { tu = typeof r.token_usage === "string" ? JSON.parse(r.token_usage) : (r.token_usage || {}); } catch {}
+      return `<div onclick="aiSelectAnalysis(${r.id})" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surf);cursor:pointer;transition:background .15s;font-size:12px;${active}" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background='${active ? 'var(--surf2)' : 'var(--surf)'}'">
+        <span style="font-size:10px">${icon}</span>
+        <span style="font-weight:600;color:var(--text)">${r.ticker}</span>
+        <span style="color:var(--faint)">${r.version === "full" ? "F" : "L"}</span>
+        <span style="color:var(--muted);margin-left:auto;font-family:var(--mono)">${r.duration_s ? r.duration_s + "s" : ""}</span>
+      </div>`;
+    }).join("");
+  } catch {}
+}
+
+/* ========== TRACK LIST: Stats ========== */
+async function aiLoadStats() {
+  try {
+    const res = await fetch("/api/ai-analyze/summary");
+    const s = await res.json();
+    if (!s.total_analyses) {
+      document.getElementById("aiStatsContent").textContent = "暂无数据";
+      return;
+    }
+    document.getElementById("aiStatsContent").innerHTML = `
+      <div style="display:flex;justify-content:space-between"><span>总分析</span><span style="color:var(--text)">${s.total_analyses}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>完整/精简</span><span style="color:var(--text)">${s.full_count || 0} / ${s.lite_count || 0}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>总 Tokens</span><span style="color:var(--text)">${s.total_tokens > 0 ? "~" + (s.total_tokens / 1000).toFixed(0) + "K" : "-"}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>平均耗时</span><span style="color:var(--text)">${s.avg_duration || "-"}s</span></div>
+    `;
+  } catch {}
+}
+
+/* ========== TRACK LIST: Search filter ========== */
+function aiFilterTrack(q) {
+  aiRenderWatchlist();
+}
+
+/* ========== TRACK LIST: Quick analyze from watchlist ========== */
+function aiQuickAnalyze(ticker) {
+  document.getElementById("aiTicker").value = ticker;
+  aiShowNewForm();
+  aiStart();
+}
+
+/* ========== TRACK LIST: Select latest analysis for ticker ========== */
+async function aiSelectLatest(ticker) {
+  const c = aiCoverageData;
+  if (!c || !c.latest[ticker]) return;
+  // Find the analysis ID from recent history
+  try {
+    const res = await fetch(`/api/ai-analyze/history?ticker=${ticker}&limit=1`);
+    const rows = await res.json();
+    if (rows.length) aiSelectAnalysis(rows[0].id);
+  } catch {}
+}
+
+/* ========== DETAIL PANEL: Load & display analysis ========== */
+async function aiSelectAnalysis(id) {
+  aiSelectedId = id;
+  try {
+    const res = await fetch("/api/ai-analyze/" + id);
+    const data = await res.json();
+    document.getElementById("aiEmpty").style.display = "none";
+    document.getElementById("aiResult").style.display = "";
+    aiShowResult(data);
+    aiLoadRecent();  // re-render to highlight active
+  } catch {}
+}
+
+/* ========== DETAIL PANEL: Render result ========== */
+function aiShowResult(r) {
+  const el = document.getElementById("aiResult");
+
+  const signal = (r.signal || "").toLowerCase();
+  const isBuy = signal.includes("buy") || signal.includes("overweight");
+  const isSell = signal.includes("sell") || signal.includes("underweight");
+  const signalColor = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
+  const signalIcon = isBuy ? "🟢" : isSell ? "🔴" : "🟡";
+
+  let metrics = {};
+  try { metrics = typeof r.key_metrics === "string" ? JSON.parse(r.key_metrics) : (r.key_metrics || {}); } catch {}
+
+  let bullPts = [], bearPts = [];
+  try { bullPts = typeof r.bull_points === "string" ? JSON.parse(r.bull_points) : (r.bull_points || []); } catch {}
+  try { bearPts = typeof r.bear_points === "string" ? JSON.parse(r.bear_points) : (r.bear_points || []); } catch {}
+
+  let tokenInfo = {};
+  try { tokenInfo = typeof r.token_usage === "string" ? JSON.parse(r.token_usage) : (r.token_usage || {}); } catch {}
+
+  const mkMetric = (k, v) => v ? `<div class="metric"><div class="v">${aiEsc(v)}</div><div class="k">${aiEsc(k)}</div></div>` : "";
+
+  el.innerHTML = `
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--surf);overflow:hidden">
+
+      <!-- Decision card -->
+      <div style="padding:20px 24px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:36px;line-height:1">${signalIcon}</span>
+          <div>
+            <div style="font-size:22px;font-weight:600;color:${signalColor};letter-spacing:-.02em">${aiEsc(r.signal || "N/A")}</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:2px">${aiEsc(r.ticker || "")} · ${aiEsc(r.trade_date || "")} · ${r.version === "lite" ? "精简版" : "完整版"}</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div class="mono" style="font-size:18px;font-weight:600;color:var(--text)">${r.duration_s ? r.duration_s + "s" : ""}</div>
+            ${tokenInfo.total ? '<div class="mono" style="font-size:11px;color:var(--muted)">~' + (tokenInfo.total / 1000).toFixed(1) + "K tokens</div>" : ""}
+          </div>
+        </div>
+        ${r.decision ? '<div style="margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap">' + aiEsc(typeof r.decision === "string" ? r.decision : JSON.stringify(r.decision)) + "</div>" : ""}
+      </div>
+
+      <!-- Key metrics row -->
+      ${Object.keys(metrics).filter(k => k !== "signal").length ? `
+      <div style="padding:14px 24px;border-bottom:1px solid var(--line)">
+        <div class="strip" style="gap:8px">
+          ${mkMetric("价格", metrics.price)}
+          ${mkMetric("PE", metrics.pe)}
+          ${mkMetric("EPS", metrics.eps)}
+          ${mkMetric("营收", metrics.revenue)}
+          ${mkMetric("市值", metrics.market_cap)}
+          ${mkMetric("目标价", metrics.target_price)}
+        </div>
+      </div>` : ""}
+
+      <!-- Bull vs Bear -->
+      ${bullPts.length || bearPts.length ? `
+      <div style="padding:18px 24px;border-bottom:1px solid var(--line)">
+        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px">⚖️ 多空对比</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="padding:12px;border:1px solid var(--green-d);border-radius:10px;background:var(--bg)">
+            <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:6px">🟢 多头</div>
+            ${bullPts.length ? bullPts.map(p => '<div style="font-size:12px;color:var(--text2);margin-bottom:5px;padding-left:10px;position:relative"><span style="position:absolute;left:0;color:var(--green)">•</span>' + aiEsc(p) + "</div>").join("") : '<div style="font-size:11px;color:var(--muted)">-</div>'}
+          </div>
+          <div style="padding:12px;border:1px solid var(--red-d);border-radius:10px;background:var(--bg)">
+            <div style="font-size:12px;font-weight:600;color:var(--red);margin-bottom:6px">🔴 空头</div>
+            ${bearPts.length ? bearPts.map(p => '<div style="font-size:12px;color:var(--text2);margin-bottom:5px;padding-left:10px;position:relative"><span style="position:absolute;left:0;color:var(--red)">•</span>' + aiEsc(p) + "</div>").join("") : '<div style="font-size:11px;color:var(--muted)">-</div>'}
+          </div>
+        </div>
+      </div>` : ""}
+
+      <!-- Analyst snapshots -->
+      ${aiRenderAnalystCards(r)}
+
+      <!-- Token usage -->
+      ${tokenInfo.total ? `
+      <div style="padding:12px 24px;display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted);font-family:var(--mono)">
+        <span>输入 ~${(tokenInfo.input_tokens / 1000).toFixed(1)}K</span>
+        <span>输出 ~${(tokenInfo.output_tokens / 1000).toFixed(1)}K</span>
+        <span>总计 ~${(tokenInfo.total / 1000).toFixed(1)}K</span>
+        <span style="color:var(--faint)">*估算</span>
+      </div>` : ""}
+    </div>
+  `;
+}
+
+function aiRenderAnalystCards(r) {
+  const sections = [
+    { icon: "📊", title: "基本面", content: r.fundamentals_report },
+    { icon: "📈", title: "技术面", content: r.market_report },
+    { icon: "💬", title: "情绪面", content: r.sentiment_report },
+    { icon: "📰", title: "新闻面", content: r.news_report },
+    { icon: "⚖️", title: "投资计划", content: r.investment_plan },
+    { icon: "🗣️", title: "辩论 & 风控", content: r.debate_summary },
+  ].filter(s => s.content);
+
+  if (!sections.length) return "";
+
+  return `
+    <div style="padding:18px 24px;border-bottom:1px solid var(--line)">
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px">📋 分析师报告</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${sections.map(s => `
+          <div style="border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden">
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);user-select:none" onclick="const t=this.nextElementSibling;const o=t.style.display==='none';t.style.display=o?'':'none';this.querySelector('.ai-arr').style.transform=o?'rotate(90deg)':''">
+              <span class="ai-arr" style="font-size:10px;transition:transform .2s;color:var(--muted)">▸</span>
+              <span>${s.icon}</span>
+              <span>${s.title}</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--faint)">${(typeof s.content === "string" ? s.content : "").length.toLocaleString()}</span>
+            </div>
+            <div style="display:none;padding:12px;border-top:1px solid var(--line);font-size:12px;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto">${aiEsc(typeof s.content === "string" ? s.content : JSON.stringify(s.content))}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function aiEsc(s) {
+  const d = document.createElement("div");
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+
+/* ========== ANALYSIS: Start ========== */
 async function aiStart() {
   const ticker = document.getElementById("aiTicker").value.trim().toUpperCase();
   if (!ticker || !/^[A-Z]{1,6}$/.test(ticker)) {
@@ -1179,8 +1498,9 @@ async function aiStart() {
 
   const statusEl = document.getElementById("aiStatus");
   statusEl.style.display = "flex";
-  document.getElementById("aiStatusText").textContent = "正在启动分析...";
+  document.getElementById("aiStatusText").textContent = "正在启动...";
   document.getElementById("aiResult").style.display = "none";
+  document.getElementById("aiEmpty").style.display = "flex";
 
   aiStartTime = Date.now();
   const elapsedEl = document.getElementById("aiElapsed");
@@ -1198,11 +1518,11 @@ async function aiStart() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || "Failed to start");
 
-    document.getElementById("aiStatusText").textContent = `分析中 — ${ticker} ${aiVersion === "full" ? "完整版" : "精简版"}...`;
+    document.getElementById("aiStatusText").textContent = `${ticker} ${aiVersion === "full" ? "完整版" : "精简版"} 分析中...`;
     aiPollStatus(data.job_id, tickInterval);
   } catch (e) {
     clearInterval(tickInterval);
-    document.getElementById("aiStatusText").textContent = "❌ 错误: " + e.message;
+    document.getElementById("aiStatusText").textContent = "❌ " + e.message;
     btn.disabled = false;
     btn.style.opacity = "1";
     btn.textContent = "▶ 开始分析";
@@ -1215,7 +1535,7 @@ async function aiPollStatus(jobId, tickInterval) {
     const data = await res.json();
 
     if (data.status === "running") {
-      document.getElementById("aiStatusText").textContent = "分析中 — agent 会诊进行中...";
+      document.getElementById("aiStatusText").textContent = "分析中 — agent 会诊...";
       aiPolling = setTimeout(() => aiPollStatus(jobId, tickInterval), 3000);
       return;
     }
@@ -1228,261 +1548,75 @@ async function aiPollStatus(jobId, tickInterval) {
     btn.style.opacity = "1";
     btn.textContent = "▶ 开始分析";
 
+    document.getElementById("aiStatus").style.display = "none";
+
     if (data.status === "error") {
-      document.getElementById("aiStatusText").textContent = "❌ 分析失败: " + (data.error || data.error_msg || "unknown");
+      document.getElementById("aiStatusText").textContent = "❌ " + (data.error || data.error_msg || "unknown");
+      document.getElementById("aiStatus").style.display = "flex";
       return;
     }
 
-    const dur = data.duration || data.result?.duration_s || "?";
-    document.getElementById("aiStatusText").textContent = `✅ 完成 · ${dur}s`;
-    document.getElementById("aiElapsed").textContent = dur + "s";
+    // Load the result
+    const result = data.result || data;
+    if (result && result.id) {
+      aiSelectAnalysis(result.id);
+    } else if (data.result_id) {
+      aiSelectAnalysis(data.result_id);
+    }
 
-    aiShowResult(data.result || data);
+    // Refresh track list
+    aiLoadCoverage();
+    aiLoadRecent();
     aiLoadStats();
-    aiLoadTickers();
-    aiLoadHistory();
   } catch (e) {
     clearInterval(tickInterval);
     document.getElementById("aiStatusText").textContent = "❌ 轮询失败: " + e.message;
   }
 }
 
-/* ---------- Result rendering ---------- */
-function aiShowResult(r) {
-  const el = document.getElementById("aiResult");
-  el.style.display = "";
+/* ========== BATCH: Scan all uncovered tickers ========== */
+async function aiScanAll() {
+  const c = aiCoverageData;
+  if (!c || !c.uncovered.length) {
+    alert("所有持仓 ticker 已有分析记录");
+    return;
+  }
+  if (!confirm(`将为以下 ${c.uncovered.length} 个 ticker 启动分析:\n${c.uncovered.join(", ")}\n\n预计耗时 ${c.uncovered.length * 5}-${c.uncovered.length * 10} 分钟。继续？`)) {
+    return;
+  }
 
-  const signal = (r.signal || "").toLowerCase();
-  const isBuy = signal.includes("buy") || signal.includes("overweight");
-  const isSell = signal.includes("sell") || signal.includes("underweight");
-  const signalColor = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
-  const signalIcon = isBuy ? "🟢" : isSell ? "🔴" : "🟡";
+  const btn = document.getElementById("aiScanBtn");
+  btn.disabled = true;
+  btn.textContent = `扫描中 0/${c.uncovered.length}...`;
 
-  let metrics = {};
-  try { metrics = typeof r.key_metrics === "string" ? JSON.parse(r.key_metrics) : (r.key_metrics || {}); } catch {}
+  let started = 0;
+  for (const ticker of c.uncovered) {
+    try {
+      await fetch("/api/ai-analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, version: aiVersion }),
+      });
+      started++;
+      btn.textContent = `扫描中 ${started}/${c.uncovered.length}...`;
+    } catch {}
+  }
 
-  let bullPts = [], bearPts = [];
-  try { bullPts = typeof r.bull_points === "string" ? JSON.parse(r.bull_points) : (r.bull_points || []); } catch {}
-  try { bearPts = typeof r.bear_points === "string" ? JSON.parse(r.bull_points) : (r.bear_points || []); } catch {}
+  btn.disabled = false;
+  btn.textContent = "⚡ 全量扫描";
 
-  let tokenInfo = {};
-  try { tokenInfo = typeof r.token_usage === "string" ? JSON.parse(r.token_usage) : (r.token_usage || {}); } catch {}
-
-  const mkMetric = (k, v) => v ? `<div class="metric"><div class="v">${aiEsc(v)}</div><div class="k">${aiEsc(k)}</div></div>` : "";
-
-  el.innerHTML = `
-    <div style="border:1px solid var(--line);border-radius:14px;background:var(--surf);overflow:hidden">
-
-      <!-- Decision card -->
-      <div style="padding:24px;border-bottom:1px solid var(--line)">
-        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-          <span style="font-size:40px;line-height:1">${signalIcon}</span>
-          <div>
-            <div style="font-size:24px;font-weight:600;color:${signalColor};letter-spacing:-.02em">${aiEsc(r.signal || "N/A")}</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:4px">${aiEsc(r.ticker || "")} · ${aiEsc(r.trade_date || "")} · ${r.version === "lite" ? "精简版" : "完整版"}</div>
-          </div>
-          <div style="margin-left:auto;text-align:right">
-            <div class="mono" style="font-size:20px;font-weight:600;color:var(--text)">${r.duration_s ? r.duration_s + "s" : ""}</div>
-            ${tokenInfo.total ? '<div class="mono" style="font-size:12px;color:var(--muted)">~' + (tokenInfo.total / 1000).toFixed(1) + "K tokens</div>" : ""}
-          </div>
-        </div>
-        ${r.decision ? '<div style="margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text2);line-height:1.7;white-space:pre-wrap">' + aiEsc(typeof r.decision === "string" ? r.decision : JSON.stringify(r.decision)) + "</div>" : ""}
-      </div>
-
-      <!-- Key metrics row -->
-      ${Object.keys(metrics).filter(k => k !== "signal").length ? `
-      <div style="padding:16px 24px;border-bottom:1px solid var(--line)">
-        <div class="strip" style="gap:8px">
-          ${mkMetric("价格", metrics.price)}
-          ${mkMetric("PE", metrics.pe)}
-          ${mkMetric("EPS", metrics.eps)}
-          ${mkMetric("营收", metrics.revenue)}
-          ${mkMetric("市值", metrics.market_cap)}
-          ${mkMetric("目标价", metrics.target_price)}
-        </div>
-      </div>` : ""}
-
-      <!-- Bull vs Bear -->
-      ${bullPts.length || bearPts.length ? `
-      <div style="padding:20px 24px;border-bottom:1px solid var(--line)">
-        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px">⚖️ 多空对比</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div style="padding:14px;border:1px solid var(--green-d);border-radius:10px;background:var(--bg)">
-            <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:8px">🟢 多头论点</div>
-            ${bullPts.length ? bullPts.map(p => '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:var(--green)">•</span>' + aiEsc(p) + "</div>").join("") : '<div style="font-size:12px;color:var(--muted)">无多头数据</div>'}
-          </div>
-          <div style="padding:14px;border:1px solid var(--red-d);border-radius:10px;background:var(--bg)">
-            <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px">🔴 空头论点</div>
-            ${bearPts.length ? bearPts.map(p => '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:var(--red)">•</span>' + aiEsc(p) + "</div>").join("") : '<div style="font-size:12px;color:var(--muted)">无空头数据（精简版不含空头分析师）</div>'}
-          </div>
-        </div>
-      </div>` : ""}
-
-      <!-- Analyst snapshots -->
-      ${aiRenderAnalystCards(r)}
-
-      <!-- Token usage -->
-      ${tokenInfo.total ? `
-      <div style="padding:14px 24px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-family:var(--mono)">
-        <span>输入 ~${(tokenInfo.input_tokens / 1000).toFixed(1)}K</span>
-        <span>输出 ~${(tokenInfo.output_tokens / 1000).toFixed(1)}K</span>
-        <span>总计 ~${(tokenInfo.total / 1000).toFixed(1)}K tokens</span>
-        <span style="color:var(--faint)">*估算值</span>
-      </div>` : ""}
-    </div>
-  `;
-
-  /* Attach toggle handlers for collapsible sections */
-  el.querySelectorAll("[data-ai-toggle]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const target = btn.nextElementSibling;
-      if (!target) return;
-      const open = target.style.display !== "none";
-      target.style.display = open ? "none" : "";
-      btn.querySelector(".ai-arrow").style.transform = open ? "" : "rotate(90deg)";
-    });
-  });
+  if (started > 0) {
+    document.getElementById("aiStatus").style.display = "flex";
+    document.getElementById("aiStatusText").textContent = `已启动 ${started} 个分析任务，后台运行中...`;
+    // Refresh after a delay
+    setTimeout(() => { aiLoadCoverage(); aiLoadRecent(); aiLoadStats(); }, 5000);
+  }
 }
 
-function aiRenderAnalystCards(r) {
-  const sections = [
-    { icon: "📊", title: "基本面分析", content: r.fundamentals_report },
-    { icon: "📈", title: "市场技术分析", content: r.market_report },
-    { icon: "💬", title: "情绪分析", content: r.sentiment_report },
-    { icon: "📰", title: "新闻分析", content: r.news_report },
-    { icon: "⚖️", title: "投资计划", content: r.investment_plan },
-    { icon: "🗣️", title: "多空辩论 & 风控", content: r.debate_summary },
-  ].filter(s => s.content);
-
-  if (!sections.length) return "";
-
-  return `
-    <div style="padding:20px 24px;border-bottom:1px solid var(--line)">
-      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px">📋 分析师报告</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        ${sections.map((s, i) => `
-          <div style="border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden">
-            <div data-ai-toggle style="display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text);user-select:none" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none';this.querySelector('.ai-arrow').style.transform=this.nextElementSibling.style.display==='none'?'':'rotate(90deg)'">
-              <span class="ai-arrow" style="font-size:11px;transition:transform .2s;color:var(--muted)">▸</span>
-              <span>${s.icon}</span>
-              <span>${s.title}</span>
-              <span style="margin-left:auto;font-size:12px;color:var(--faint)">${(typeof s.content === "string" ? s.content : "").length.toLocaleString()} chars</span>
-            </div>
-            <div style="display:none;padding:14px;border-top:1px solid var(--line);font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:500px;overflow-y:auto">${aiEsc(typeof s.content === "string" ? s.content : JSON.stringify(s.content))}</div>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function aiEsc(s) {
-  const d = document.createElement("div");
-  d.textContent = s || "";
-  return d.innerHTML;
-}
-
-/* ---------- Stats bar ---------- */
-async function aiLoadStats() {
-  try {
-    const res = await fetch("/api/ai-analyze/summary");
-    const s = await res.json();
-    if (!s.total_analyses) return;
-
-    const el = document.getElementById("aiStatsBar");
-    el.style.display = "";
-    el.innerHTML = `<div class="strip" style="gap:8px">
-      <div class="metric"><div class="v">${s.total_analyses}</div><div class="k">总分析数</div></div>
-      <div class="metric"><div class="v">${s.full_count || 0}/${s.lite_count || 0}</div><div class="k">完整/精简</div></div>
-      <div class="metric"><div class="v">${s.total_tokens > 0 ? "~" + (s.total_tokens / 1000).toFixed(0) + "K" : "-"}</div><div class="k">总 Tokens</div></div>
-      <div class="metric"><div class="v">${s.avg_duration || "-"}s</div><div class="k">平均耗时</div></div>
-    </div>`;
-  } catch {}
-}
-
-/* ---------- Ticker filter ---------- */
-async function aiLoadTickers() {
-  try {
-    const res = await fetch("/api/ai-analyze/tickers");
-    const tickers = await res.json();
-    const sel = document.getElementById("aiFilterTicker");
-    const current = sel.value;
-    sel.innerHTML = '<option value="">全部 Ticker</option>';
-    tickers.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t.ticker;
-      opt.textContent = `${t.ticker} (${t.total})`;
-      sel.appendChild(opt);
-    });
-    sel.value = current;
-  } catch {}
-}
-
-/* ---------- History table ---------- */
-async function aiLoadHistory() {
-  const ticker = document.getElementById("aiFilterTicker").value;
-  try {
-    const url = ticker ? `/api/ai-analyze/history?ticker=${ticker}` : "/api/ai-analyze/history?limit=20";
-    const res = await fetch(url);
-    const rows = await res.json();
-
-    const el = document.getElementById("aiHistoryTable");
-    if (!rows.length) {
-      el.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px 0">暂无分析记录</div>';
-      return;
-    }
-
-    el.innerHTML = `
-      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:12px">
-        <table style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead>
-            <tr style="border-bottom:1px solid var(--line);background:var(--surf)">
-              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">Ticker</th>
-              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">日期</th>
-              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">版本</th>
-              <th style="padding:10px 14px;text-align:left;font-weight:500;color:var(--muted)">信号</th>
-              <th style="padding:10px 14px;text-align:right;font-weight:500;color:var(--muted)">耗时</th>
-              <th style="padding:10px 14px;text-align:right;font-weight:500;color:var(--muted)">Tokens</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => {
-              const sig = (r.signal || "").toLowerCase();
-              const isBuy = sig.includes("buy") || sig.includes("overweight");
-              const isSell = sig.includes("sell") || sig.includes("underweight");
-              const sigColor = isBuy ? "var(--green)" : isSell ? "var(--red)" : "var(--amber)";
-              let tu = {};
-              try { tu = typeof r.token_usage === "string" ? JSON.parse(r.token_usage) : (r.token_usage || {}); } catch {}
-              return `<tr style="border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--surf2)'" onmouseout="this.style.background=''" onclick="aiSelectHistory(${r.id})">
-                <td style="padding:10px 14px;font-weight:600;color:var(--text)">${aiEsc(r.ticker)}</td>
-                <td style="padding:10px 14px;color:var(--text2)">${aiEsc(r.trade_date || "")}</td>
-                <td style="padding:10px 14px"><span style="padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500;${r.version === "full" ? "background:var(--indigo-d);color:var(--indigo)" : "background:var(--surf2);color:var(--text2)"}">${r.version === "full" ? "完整" : "精简"}</span></td>
-                <td style="padding:10px 14px;color:${sigColor};font-weight:500">${aiEsc(r.signal || "-")}</td>
-                <td style="padding:10px 14px;text-align:right;font-family:var(--mono);color:var(--text2)">${r.duration_s ? r.duration_s + "s" : "-"}</td>
-                <td style="padding:10px 14px;text-align:right;font-family:var(--mono);color:var(--muted)">${tu.total ? "~" + (tu.total / 1000).toFixed(1) + "K" : "-"}</td>
-              </tr>`;
-            }).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } catch {}
-}
-
-async function aiSelectHistory(id) {
-  try {
-    const res = await fetch("/api/ai-analyze/" + id);
-    const data = await res.json();
-    aiShowResult(data);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } catch {}
-}
-
-/* Init on tab show */
 function aiInit() {
+  aiLoadCoverage();
+  aiLoadRecent();
   aiLoadStats();
-  aiLoadTickers();
-  aiLoadHistory();
 }
 
 init();

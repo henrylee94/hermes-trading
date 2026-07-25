@@ -88,7 +88,7 @@ def _get_ai_analyst():
         sys.path.insert(0, str(ROOT / "scripts"))
         from ai_analyst import (
             start_analysis, get_job_status, get_history,
-            list_tickers, get_token_summary, get_analysis, init_db,
+            list_tickers, get_token_summary, get_analysis, get_coverage, init_db,
         )
         init_db()
         _ai_analyst = {
@@ -98,6 +98,7 @@ def _get_ai_analyst():
             "tickers": list_tickers,
             "summary": get_token_summary,
             "get": get_analysis,
+            "coverage": get_coverage,
         }
     return _ai_analyst
 
@@ -375,6 +376,13 @@ async def ai_analyze_summary():
     """Aggregate token usage and cost summary."""
     api = _get_ai_analyst()
     return api["summary"]()
+
+
+@app.get("/api/ai-analyze/coverage")
+async def ai_analyze_coverage():
+    """Cross-reference watchlist with analysis history."""
+    api = _get_ai_analyst()
+    return api["coverage"]()
 
 
 @app.get("/api/ai-analyze/{analysis_id}")

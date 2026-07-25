@@ -202,6 +202,61 @@ def get_token_summary() -> dict:
     return result
 
 
+def get_coverage() -> dict:
+    """Cross-reference watchlist with analysis history.
+
+    Returns:
+        watchlist: list of tickers from swing_watchlist.json
+        covered: list of tickers that have at least one done analysis
+        uncovered: list of tickers with no analysis yet
+        latest: dict mapping ticker -> latest analysis summary
+    """
+    # Load watchlist
+    wl_path = ROOT / "swing_watchlist.json"
+    watchlist = []
+    if wl_path.exists():
+        try:
+            wl = json.loads(wl_path.read_text())
+            watchlist = [p["sym"] for p in wl.get("pins", [])]
+            for a in wl.get("auto", []):
+                if a["sym"] not in watchlist:
+                    watchlist.append(a["sym"])
+        except (json.JSONDecodeError, KeyError):
+            pass
+
+    # Query DB for latest analysis per ticker
+    conn = _get_db()
+    rows = conn.execute("""
+        SELECT ticker, signal, version, trade_date, duration_s,
+               finished_at, status
+        FROM ai_analyses
+        WHERE status = 'done'
+        ORDER BY finished_at DESC
+    """).fetchall()
+    conn.close()
+
+    latest = {}
+    for r in rows:
+        t = r["ticker"]
+        if t not in latest:
+            latest[t] = {
+                "signal": r["signal"],
+                "version": r["version"],
+                "date": r["trade_date"],
+                "duration_s": r["duration_s"],
+            }
+
+    covered = [t for t in watchlist if t in latest]
+    uncovered = [t for t in watchlist if t not in latest]
+
+    return {
+        "watchlist": watchlist,
+        "covered": covered,
+        "uncovered": uncovered,
+        "latest": latest,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Structured summary extraction
 # ---------------------------------------------------------------------------
