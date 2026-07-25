@@ -580,7 +580,7 @@
 
             <!-- Watchlist section -->
             <div>
-              <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:0 4px">📊 持仓 Watch</div>
+              <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:0 4px">📊 持仓 Holdings</div>
               <div id="aiWatchlist" style="display:flex;flex-direction:column;gap:4px"></div>
             </div>
 
@@ -1235,7 +1235,7 @@ async function aiLoadCoverage() {
 function aiRenderCoverageBar() {
   const c = aiCoverageData;
   if (!c) return;
-  const total = c.watchlist.length;
+  const total = c.holdings.length;
   const covered = c.covered.length;
   const pct = total > 0 ? Math.round(covered / total * 100) : 0;
   document.getElementById("aiCoverageText").textContent = `${covered}/${total}`;
@@ -1248,7 +1248,7 @@ function aiRenderWatchlist() {
   const el = document.getElementById("aiWatchlist");
   const search = (document.getElementById("aiSearch").value || "").toUpperCase();
 
-  const items = c.watchlist
+  const items = c.holdings
     .filter(t => !search || t.includes(search))
     .map(t => {
       const info = c.latest[t];
