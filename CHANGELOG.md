@@ -1,6 +1,19 @@
 #  (2026-07-25)
 
 
+### Bug Fixes
+
+* **ai-analyst:** use actual holdings instead of swing watchlist ([20233d1](https://github.com/henrylee94/hermes-trading/commit/20233d1b53b6f82be3d22eaece9adadd905530e2))
+
+
+### Features
+
+* **ai-analyst:** v3 application workspace layout ([78446ca](https://github.com/henrylee94/hermes-trading/commit/78446ca4b007c8e31467b5c4217a1db956e9e1c0))
+* initial release — trading assistant with 3 strategy pipelines ([416a9b6](https://github.com/henrylee94/hermes-trading/commit/416a9b6fab32217ec94d550ce418bb756d375b8c))
+* **trading:** redesign AI Analyst page as proper analyst dashboard ([438f864](https://github.com/henrylee94/hermes-trading/commit/438f8644b1996bdf318356c061bb997e57882ccf))
+#  (2026-07-25)
+
+
 ### Features
 
 * **ai-analyst:** v3 application workspace layout ([78446ca](https://github.com/henrylee94/hermes-trading/commit/78446ca4b007c8e31467b5c4217a1db956e9e1c0))
